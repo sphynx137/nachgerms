@@ -389,6 +389,33 @@ label[for="skinsInput"] { outline: 2px solid ' + ui + ' !important; outline-offs
 .ge-cell-opt[data-val="invisible"] { background: repeating-conic-gradient(#666 0% 25%,#333 0% 50%) 0 0/10px 10px; }\n\
 .ge-cell-opt[data-val="white"]     { background: #ffffff; }\n\
 .ge-cell-opt[data-val="black"]     { background: #000000; }\n\
+    /* GERMSFOX PANEL TEXT */\n\
+#germsfoxSettingsCard p,\n\
+#germsfoxSettingsCard label,\n\
+#germsfoxSettingsCard span:not(.badge),\n\
+#germsfoxSettingsTabsContent p,\n\
+#germsfoxSettingsTabsContent label,\n\
+#germsfox-settings-general p,\n\
+#germsfox-settings-general label,\n\
+#germsfox-settings-controls p,\n\
+#germsfox-settings-controls label,\n\
+#germsfox-settings-controls div[style*="font-size"],\n\
+#germsfox-settings-general div[style*="font-size"] {\n\
+  color: ' + ui + ' !important;\n\
+}\n\
+\n\
+/* SETTINGS GAME TEXT */\n\
+#settings-controls p,\n\
+#settings-controls label,\n\
+#settings-controls div[style*="font-size"],\n\
+#settings-gameplay p,\n\
+#settings-gameplay label,\n\
+#settings-general p,\n\
+#settings-general label,\n\
+#settings-graphics p,\n\
+#settings-graphics label {\n\
+  color: ' + ui + ' !important;\n\
+}\n\
 ';
 
   var etiqueta = document.createElement('style');
