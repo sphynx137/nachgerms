@@ -22,7 +22,8 @@
 
 ---
 
-> 🌐 **Language / Idioma**.
+> 🌐 **Language / Idioma**..
+> 
 > This document is available in two languages.
 > **English version starts below** — **Spanish version** available further down.
 >
