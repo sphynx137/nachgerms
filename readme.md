@@ -49,7 +49,6 @@
 - **Customizable background**
 - **Cell background**
 - **Enhanced XP bar**
-- **Version label** — displays "Nch☆" next to the Germsfox tag in-game.
 - All settings are saved automatically and persist between sessions.
 
 ## Installation
@@ -119,7 +118,6 @@ Made by **Nach** for the [Germs.io](https://germs.io/) community.
 - **Fondo personalizable**
 - **Cell background**
 - **XP bar mejorada**
-- **Etiqueta de versión** — muestra "Nch☆" junto al tag de Germsfox en el juego.
 - Todos los ajustes se guardan automáticamente y persisten entre sesiones.
 
 ## Instalación
