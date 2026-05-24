@@ -119,6 +119,13 @@ input[type="text"]:focus, input:not([type]):focus {\n\
 \n\
 #partyText b, div#partyText b { color: ' + ui + ' !important; }\n\
 \n\
+/* PARTY DESCRIPTION TEXT */\n\
+.partyCard p, #partyMenu p, div[class*="party"] p,\n\
+#partyContainer p, #party p,\n\
+#partyText p, div#partyText p {\n\
+  color: ' + ui + ' !important;\n\
+}\n\
+\n\
 /* BTN-INFO */\n\
 button.btn-info, .btn.btn-info, a.btn-info {\n\
   background-color: ' + fondo + ' !important;\n\
