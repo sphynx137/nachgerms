@@ -8,7 +8,7 @@
 var ZONAS_EXCLUIDAS = [
   '.color-picker', '#cellContainer', '#leaderboardList',
   '#debugText', '#chat', '#worldTab',
-  '#partyText', '#germsfoxInfo', '#ge-nach-label',
+  '#germsfoxInfo', '#ge-nach-label',
   'a#version', '#version', '[for="skinsInput"]'
 ];
 
@@ -120,9 +120,7 @@ input[type="text"]:focus, input:not([type]):focus {\n\
 #partyText b, div#partyText b { color: ' + ui + ' !important; }\n\
 \n\
 /* PARTY DESCRIPTION TEXT */\n\
-.partyCard p, #partyMenu p, div[class*="party"] p,\n\
-#partyContainer p, #party p,\n\
-#partyText p, div#partyText p {\n\
+div.partyText {\n\
   color: ' + ui + ' !important;\n\
 }\n\
 \n\
