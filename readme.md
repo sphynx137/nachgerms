@@ -22,12 +22,12 @@
 
 ---
 
-> 🌐 **Language / Idioma**
+> 🌐 **Language / Idioma**.
 > This document is available in two languages.
-> **English version starts below** — [Versión en Español](#nachgerms--ui-panel-1) available further down.
+> **English version starts below** — **Spanish version** available further down.
 >
 > Este documento está disponible en dos idiomas.
-> La versión en inglés comienza a continuación — la **versión en Español** se encuentra más abajo.
+> La **versión en inglés** comienza a continuación — la **versión en Español** se encuentra más abajo.
 
 ---
 
