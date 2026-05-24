@@ -39,7 +39,7 @@
 
 > Browser extension to customize the [Germs.io](https://germs.io/) interface.
 > Change border, text, and background colors with a single click.
-> ✅ Compatible with [Germsfox](https://github.com/procrarast/germsfox) — will not override its colors.
+> ✅ Compatible with <a href="https://github.com/procrarast/germsfox" target="_blank">Germsfox</a> — will not override its colors.
 
 ---
 
@@ -109,7 +109,7 @@ Made by **Nach** for the [Germs.io](https://germs.io/) community.
 
 > Extensión de navegador para personalizar la interfaz de [Germs.io](https://germs.io/).
 > Cambia colores de bordes, textos y fondo con un solo clic.
-> ✅ Compatible con [Germsfox](https://github.com/procrarast/germsfox) — no pisará sus colores.
+> ✅ Compatible con <a href="https://github.com/procrarast/germsfox" target="_blank">Germsfox</a> — no pisará sus colores.
 
 ---
 
