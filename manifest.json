@@ -1,0 +1,37 @@
+{
+  "name": "NachGerms — UI Panel",
+  "version": "2.0.9",
+  "description": "Color de interfaz (bordes + texto) y fondo personalizables para Germs.io. Compatible con Germsfox.",
+  "manifest_version": 3,
+
+  "icons": {
+    "16":  "images/icon-16.png",
+    "48":  "images/icon-48.png",
+    "128": "images/icon-128.png"
+  },
+
+  "action": {
+    "default_popup": "src/popup.html",
+    "default_title": "NachGerms UI Panel",
+    "default_icon": {
+      "16":  "images/icon-16.png",
+      "48":  "images/icon-48.png",
+      "128": "images/icon-128.png"
+    }
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://*.germs.io/*"],
+      "js": [
+        "src/storage.js",
+        "src/dom.js",
+        "src/content.js"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+
+  "permissions": ["storage"],
+  "host_permissions": ["*://*.germs.io/*"]
+}

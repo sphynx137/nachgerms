@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NachGerms UI Panel</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 260px;
+      background: #0d0d0d;
+      color: #aaa;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      user-select: none;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px 8px;
+      border-bottom: 1px solid #222;
+    }
+    .header-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .header-title span { font-weight: 900; }
+    .header-version {
+      font-size: 10px;
+      color: #555;
+    }
+
+    /* ── Section ── */
+    .section {
+      padding: 10px 14px;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 8px;
+    }
+
+    /* ── Color rows ── */
+    .color-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .color-row:last-child { margin-bottom: 0; }
+    .color-row-label {
+      flex: 1;
+      font-size: 11px;
+      color: #888;
+      letter-spacing: 0.5px;
+    }
+    .color-preview {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: 1px solid #333;
+      flex-shrink: 0;
+    }
+    .color-hex {
+      font-size: 10px;
+      color: #555;
+      width: 52px;
+      text-align: right;
+      font-family: monospace;
+    }
+    input[type="color"] {
+      width: 28px;
+      height: 22px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: 0;
+      flex-shrink: 0;
+    }
+
+    /* ── Cell BG ── */
+    .cellbg-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .cellbg-opt {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      border: 2px solid #444;
+      cursor: pointer;
+      box-sizing: border-box;
+      transition: border-color .15s, transform .1s;
+      flex-shrink: 0;
+    }
+    .cellbg-opt:hover { transform: scale(1.1); }
+    .cellbg-opt.active { box-shadow: 0 0 5px currentColor; }
+    .cellbg-opt[data-val="default"]   { background: linear-gradient(135deg,#555 50%,#333 50%); }
+    .cellbg-opt[data-val="invisible"] { background: repeating-conic-gradient(#666 0% 25%,#333 0% 50%) 0 0/8px 8px; }
+    .cellbg-opt[data-val="white"]     { background: #ffffff; }
+    .cellbg-opt[data-val="black"]     { background: #000000; }
+    .cellbg-name { font-size: 10px; color: #555; margin-left: 2px; }
+
+    /* ── Reset button ── */
+    .btn-reset {
+      width: 100%;
+      padding: 6px;
+      background: transparent;
+      border: 1px solid #333;
+      border-radius: 4px;
+      color: #555;
+      font-size: 11px;
+      cursor: pointer;
+      transition: border-color .15s, color .15s;
+    }
+    .btn-reset:hover { color: #aaa; border-color: #555; }
+
+    /* ── Footer ── */
+    .footer {
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-compat {
+      font-size: 10px;
+      color: #444;
+    }
+    .footer-link {
+      font-size: 10px;
+      color: #444;
+      text-decoration: none;
+    }
+    .footer-link:hover { color: #888; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-title"><span id="title-color">Nch☆</span> UI Panel</div>
+    <div class="header-version" id="version-label">v2.0.9</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Colores</div>
+
+    <div class="color-row">
+      <span class="color-row-label">UI / Bordes</span>
+      <div class="color-preview" id="preview-ui"></div>
+      <span class="color-hex" id="hex-ui">#00eeff</span>
+      <input type="color" id="picker-ui" value="#00eeff">
+    </div>
+
+    <div class="color-row">
+      <span class="color-row-label">Fondo</span>
+      <div class="color-preview" id="preview-fondo"></div>
+      <span class="color-hex" id="hex-fondo">#000000</span>
+      <input type="color" id="picker-fondo" value="#000000">
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Cell background</div>
+    <div class="cellbg-row">
+      <div class="cellbg-opt" data-val="default"   title="Default"></div>
+      <div class="cellbg-opt" data-val="invisible" title="Transparent"></div>
+      <div class="cellbg-opt" data-val="white"     title="White"></div>
+      <div class="cellbg-opt" data-val="black"     title="Black"></div>
+      <span class="cellbg-name" id="cellbg-name">Default</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <button class="btn-reset" id="btn-reset">Restaurar valores por defecto</button>
+  </div>
+
+  <div class="footer">
+    <span class="footer-compat">✓ Compatible con Germsfox</span>
+    <a class="footer-link" id="footer-link" href="#" target="_blank">GitHub ↗</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
