@@ -377,6 +377,13 @@ label[for="skinsInput"] { outline: 2px solid ' + ui + ' !important; outline-offs
   background-color: ' + fondo + ' !important; border: 1px solid ' + ui + ' !important; color: ' + ui + ' !important;\n\
 }\n\
 \n\
+/* VERSION LABELS — nunca coloreados por NachGerms */\n\
+#ge-nach-label, #ge-nach-label b, #ge-nach-label a,\n\
+span#ge-gf-label, span#ge-gf-label * {\n\
+  color: unset !important;\n\
+}\n\
+#ge-nach-label a:hover { text-decoration: underline !important; cursor: pointer !important; }\n\
+\n\
 /* SCROLLBAR */\n\
 ::-webkit-scrollbar { width: 5px; }\n\
 ::-webkit-scrollbar-track { background: transparent; }\n\
@@ -548,11 +555,6 @@ new MutationObserver(function() {
 
 new MutationObserver(function() {
   patchVersionTag();
-  var gfLabel   = document.getElementById('ge-gf-label');
-  var nachLabel = document.getElementById('ge-nach-label');
-  if (gfLabel) gfLabel.style.setProperty('color', colorUI, 'important');
-  var nachB = nachLabel ? nachLabel.querySelector('b') : null;
-  if (nachB) nachB.style.setProperty('color', colorUI, 'important');
 }).observe(document.body, { childList: true, subtree: true });
 
 // ─── LISTEN FOR POPUP CHANGES ────────────────────────────────────────────────
@@ -570,11 +572,6 @@ chrome.storage.onChanged.addListener(function(changes, area) {
   if (trigger) trigger.style.borderColor = colorUI;
   var activeOpt = document.querySelector('#ge-cellbg-popup [data-cellval="' + cellBg + '"]');
   if (activeOpt) activeOpt.style.borderColor = colorUI;
-  var gfLabel   = document.getElementById('ge-gf-label');
-  var nachLabel = document.getElementById('ge-nach-label');
-  if (gfLabel) gfLabel.style.setProperty('color', colorUI, 'important');
-  var nachB = nachLabel ? nachLabel.querySelector('b') : null;
-  if (nachB) nachB.style.setProperty('color', colorUI, 'important');
 });
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
