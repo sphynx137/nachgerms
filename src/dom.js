@@ -4,7 +4,7 @@
 // Depends on: storage.js  (NachStorage, NACH_DEFAULTS)
 // Depends on: content.js  (colorUI, colorFondo, cellBg — available at call time)
 
-var SCRIPT_VERSION = '2.0.9'; // keep in sync with manifest.json "version"
+var SCRIPT_VERSION = '1.2.9'; // keep in sync with manifest.json "version"
 
 // ─── XP BAR ──────────────────────────────────────────────────────────────────
 // Moves the EXP label outside the progress bar and cleans its styling.
@@ -51,12 +51,13 @@ function initXPBar() {
 
 // ─── VERSION TAG ─────────────────────────────────────────────────────────────
 // Appends "Nch☆: 2.0.9" next to the existing Germsfox version info.
+// Germsfox y Nch☆ heredan el color original del juego (sin UI color).
 
 function patchVersionTag() {
   var ver = document.getElementById('version');
   if (!ver) return;
 
-  // Color the Germsfox label if present
+  // Germsfox label — solo negrita, sin color personalizado
   var gfInfo = document.getElementById('germsfoxInfo');
   if (gfInfo && !document.getElementById('ge-gf-label')) {
     var gfText   = (gfInfo.textContent || gfInfo.innerText || '').trim();
@@ -67,7 +68,7 @@ function patchVersionTag() {
       gfInfo.innerHTML = '';
       var gfSpan = document.createElement('span');
       gfSpan.id  = 'ge-gf-label';
-      gfSpan.style.cssText = 'color:' + colorUI + ' !important;font-weight:700 !important';
+      gfSpan.style.cssText = 'font-weight:700';
       gfSpan.textContent = wordGF;
       gfInfo.appendChild(gfSpan);
       if (restGF) gfInfo.appendChild(document.createTextNode(restGF));
@@ -83,7 +84,7 @@ function patchVersionTag() {
     existingNach = null;
   }
 
-  // Inject NachGerms label
+  // Inject NachGerms label — solo negrita, sin color personalizado
   if (!existingNach) {
     var spans = ver.querySelectorAll('span');
     var targetSpan = null;
@@ -97,17 +98,20 @@ function patchVersionTag() {
     var nach     = document.createElement('span');
     nach.id      = 'ge-nach-label';
     var nachLink = document.createElement('a');
-    nachLink.href   = 'https://github.com/sphynx137/nachgerms.git';
-    nachLink.target = '_blank';
-    nachLink.rel    = 'noopener noreferrer';
+    nachLink.href   = 'https://github.com/sphynx137/nachgerms';
     nachLink.style.cssText = 'text-decoration:none;cursor:pointer';
+    nachLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      window.open('https://github.com/sphynx137/nachgerms', '_blank', 'noopener');
+    });
 
     var nachB = document.createElement('b');
-    nachB.style.cssText = 'color:' + colorUI + ' !important;font-weight:900 !important';
+    nachB.style.cssText = 'font-weight:900';
     nachB.textContent   = 'Nch\u2606';
     nachLink.appendChild(nachB);
+    nachLink.appendChild(document.createTextNode(': ' + SCRIPT_VERSION));
     nach.appendChild(nachLink);
-    nach.appendChild(document.createTextNode(': ' + SCRIPT_VERSION));
     targetSpan.appendChild(sep);
     targetSpan.appendChild(nach);
   }
