@@ -18,11 +18,21 @@ var CLASES_EXCLUIDAS = [
 ];
 
 // ─── RUNTIME STATE ───────────────────────────────────────────────────────────
-// Initialised from chrome.storage.local on load; updated on popup changes.
 
 var colorUI    = NACH_DEFAULTS.colorUI;
 var colorFondo = NACH_DEFAULTS.colorFondo;
 var cellBg     = NACH_DEFAULTS.cellBg;
+
+// ─── DETECCIÓN DE ESTADO ─────────────────────────────────────────────────────
+// Cuando el botón Play no está visible, el jugador está en partida.
+// En ese estado el JS no toca estilos de texto — el CSS se encarga.
+
+function estaEnJuego() {
+  var playBtn = document.getElementById('play');
+  if (!playBtn) return false;
+  var s = window.getComputedStyle(playBtn);
+  return s.display === 'none' || s.visibility === 'hidden' || playBtn.offsetParent === null;
+}
 
 // ─── CSS INJECTION ───────────────────────────────────────────────────────────
 
@@ -118,11 +128,7 @@ input[type="text"]:focus, input:not([type]):focus {\n\
 }\n\
 \n\
 #partyText b, div#partyText b { color: ' + ui + ' !important; }\n\
-\n\
-/* PARTY DESCRIPTION TEXT */\n\
-div.partyText {\n\
-  color: ' + ui + ' !important;\n\
-}\n\
+div.partyText { color: ' + ui + ' !important; }\n\
 \n\
 /* BTN-INFO */\n\
 button.btn-info, .btn.btn-info, a.btn-info {\n\
@@ -394,7 +400,7 @@ label[for="skinsInput"] { outline: 2px solid ' + ui + ' !important; outline-offs
 .ge-cell-opt[data-val="invisible"] { background: repeating-conic-gradient(#666 0% 25%,#333 0% 50%) 0 0/10px 10px; }\n\
 .ge-cell-opt[data-val="white"]     { background: #ffffff; }\n\
 .ge-cell-opt[data-val="black"]     { background: #000000; }\n\
-    /* GERMSFOX PANEL TEXT */\n\
+/* GERMSFOX PANEL TEXT */\n\
 #germsfoxSettingsCard p,\n\
 #germsfoxSettingsCard label,\n\
 #germsfoxSettingsCard span:not(.badge),\n\
@@ -408,17 +414,12 @@ label[for="skinsInput"] { outline: 2px solid ' + ui + ' !important; outline-offs
 #germsfox-settings-general div[style*="font-size"] {\n\
   color: ' + ui + ' !important;\n\
 }\n\
-\n\
 /* SETTINGS GAME TEXT */\n\
-#settings-controls p,\n\
-#settings-controls label,\n\
+#settings-controls p, #settings-controls label,\n\
 #settings-controls div[style*="font-size"],\n\
-#settings-gameplay p,\n\
-#settings-gameplay label,\n\
-#settings-general p,\n\
-#settings-general label,\n\
-#settings-graphics p,\n\
-#settings-graphics label {\n\
+#settings-gameplay p, #settings-gameplay label,\n\
+#settings-general p, #settings-general label,\n\
+#settings-graphics p, #settings-graphics label {\n\
   color: ' + ui + ' !important;\n\
 }\n\
 ';
@@ -428,7 +429,6 @@ label[for="skinsInput"] { outline: 2px solid ' + ui + ' !important; outline-offs
   etiqueta.textContent = css;
   document.head.appendChild(etiqueta);
 
-  // Patch inline styles on key elements
   var gfBtn = document.getElementById('germsfoxButton');
   if (gfBtn) {
     gfBtn.style.setProperty('background-color', fondo, 'important');
@@ -443,10 +443,13 @@ label[for="skinsInput"] { outline: 2px solid ' + ui + ' !important; outline-offs
 }
 
 // ─── TEXT COLOR ───────────────────────────────────────────────────────────────
+// Solo corre cuando el jugador está en el lobby (no en partida).
 
 function aplicarColorTexto(ui) {
+  if (estaEnJuego()) return;
+
   document.querySelectorAll('p,label,h1,h2,h3,h4,h5,h6,td,th,li,span,i,b,strong')
-    .forEach(function (el) {
+    .forEach(function(el) {
       for (var z = 0; z < ZONAS_EXCLUIDAS.length; z++) {
         if (el.closest(ZONAS_EXCLUIDAS[z])) return;
       }
@@ -477,7 +480,9 @@ function aplicarColorTexto(ui) {
 // ─── PROTECT GERMSFOX COLORS ─────────────────────────────────────────────────
 
 function protegerColoresGermsfox() {
-  document.querySelectorAll('[style*="color"]').forEach(function (el) {
+  if (estaEnJuego()) return;
+
+  document.querySelectorAll('[style*="color"]').forEach(function(el) {
     if (el.closest('#partyText')) return;
     if (el.id === 'loginEXP') return;
     if (el.classList && el.classList.contains('fa-play')) {
@@ -506,11 +511,11 @@ function protegerColoresGermsfox() {
 // ─── GAME MODES COLOR ────────────────────────────────────────────────────────
 
 function aplicarColorModos() {
-  document.querySelectorAll('div.gm.active, div.gm.active *').forEach(function (el) {
+  document.querySelectorAll('div.gm.active, div.gm.active *').forEach(function(el) {
     if (el.tagName === 'IMG' || el.tagName === 'CANVAS') return;
     el.style.setProperty('color', colorFondo, 'important');
   });
-  document.querySelectorAll('#gamemodes .gm:not(.active), #gamemodes .gm:not(.active) *').forEach(function (el) {
+  document.querySelectorAll('#gamemodes .gm:not(.active), #gamemodes .gm:not(.active) *').forEach(function(el) {
     if (el.tagName === 'IMG' || el.tagName === 'CANVAS') return;
     el.style.setProperty('color', colorUI, 'important');
   });
@@ -519,27 +524,31 @@ function aplicarColorModos() {
 // ─── MUTATION OBSERVERS ──────────────────────────────────────────────────────
 
 var _throttleTimer = null;
-new MutationObserver(function () {
-  if (_throttleTimer) return;
-  _throttleTimer = setTimeout(function () {
+var _applying = false;
+
+new MutationObserver(function() {
+  if (_throttleTimer || _applying) return;
+  _throttleTimer = setTimeout(function() {
+    _applying = true;
     aplicarColorTexto(colorUI);
     protegerColoresGermsfox();
     var partyTextB = document.querySelector('#partyText b');
     if (partyTextB) partyTextB.style.setProperty('color', colorUI, 'important');
+    _applying = false;
     _throttleTimer = null;
-  }, 300);
+  }, 400);
 }).observe(document.body, { childList: true, subtree: true });
 
-new MutationObserver(function () {
+new MutationObserver(function() {
   aplicarColorModos();
 }).observe(document.body, {
   childList: true, subtree: true,
   attributes: true, attributeFilter: ['style', 'class']
 });
 
-new MutationObserver(function () {
+new MutationObserver(function() {
   patchVersionTag();
-  var gfLabel  = document.getElementById('ge-gf-label');
+  var gfLabel   = document.getElementById('ge-gf-label');
   var nachLabel = document.getElementById('ge-nach-label');
   if (gfLabel) gfLabel.style.setProperty('color', colorUI, 'important');
   var nachB = nachLabel ? nachLabel.querySelector('b') : null;
@@ -547,9 +556,8 @@ new MutationObserver(function () {
 }).observe(document.body, { childList: true, subtree: true });
 
 // ─── LISTEN FOR POPUP CHANGES ────────────────────────────────────────────────
-// The popup writes to chrome.storage.local; we react immediately here.
 
-chrome.storage.onChanged.addListener(function (changes, area) {
+chrome.storage.onChanged.addListener(function(changes, area) {
   if (area !== 'local') return;
   if (changes.colorUI)    colorUI    = changes.colorUI.newValue;
   if (changes.colorFondo) colorFondo = changes.colorFondo.newValue;
@@ -558,12 +566,11 @@ chrome.storage.onChanged.addListener(function (changes, area) {
   aplicarColorTexto(colorUI);
   protegerColoresGermsfox();
 
-  // Sync cell bg selector border color
   var trigger = document.getElementById('ge-cellbg-selector');
   if (trigger) trigger.style.borderColor = colorUI;
   var activeOpt = document.querySelector('#ge-cellbg-popup [data-cellval="' + cellBg + '"]');
   if (activeOpt) activeOpt.style.borderColor = colorUI;
-  var gfLabel  = document.getElementById('ge-gf-label');
+  var gfLabel   = document.getElementById('ge-gf-label');
   var nachLabel = document.getElementById('ge-nach-label');
   if (gfLabel) gfLabel.style.setProperty('color', colorUI, 'important');
   var nachB = nachLabel ? nachLabel.querySelector('b') : null;
@@ -583,10 +590,9 @@ function nachInit(data) {
   aplicarColorModos();
   initXPBar();
   setTimeout(injectCellBgSelector, 500);
-  [500, 1000, 2000, 4000, 8000].forEach(function (ms) { setTimeout(patchVersionTag, ms); });
+  [500, 1000, 2000, 4000, 8000].forEach(function(ms) { setTimeout(patchVersionTag, ms); });
 
-  // Re-apply after React/game hydration
-  setTimeout(function () {
+  setTimeout(function() {
     aplicarEstilos(colorUI, colorFondo);
     aplicarColorTexto(colorUI);
     protegerColoresGermsfox();
