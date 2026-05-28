@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Germs.io - Nach☆ Color
 // @namespace    germs-tema
-// @version      2.0.9
+// @version      1.2.9
 // @updateURL    https://nachgerms.pages.dev/NachGerms-UIPanel.user.js
 // @downloadURL  https://nachgerms.pages.dev/NachGerms-UIPanel.user.js
 // @description  UI Color (bordes+texto) y fondo personalizables. Compatible con Germsfox.
