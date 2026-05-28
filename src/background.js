@@ -1,2 +1,2 @@
-// NachGerms — background service worker
+// NachGerms — background service worker.
 self.addEventListener('install', () => {});
