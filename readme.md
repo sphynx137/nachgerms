@@ -55,11 +55,7 @@
 
 ### Chromium / Chrome / Edge / Brave
 
-1. Download or clone this repository:
-   ```
-   git clone https://github.com/sphynx137/nachgerms.git
-   ```
-   Or download the `.zip` from the green **<> Code** button and extract it.
+1. Download the `.zip` from the green **<> Code** button and extract it.
 
 2. Open `chrome://extensions` in your browser.
 3. Enable **Developer mode** (top right corner).
@@ -67,7 +63,7 @@
 
 ### Firefox
 
-1. Download or clone the repository.
+1. Download the repository.
 2. Open `about:debugging` in Firefox.
 3. Click **This Firefox**.
 4. Click **Load Temporary Add-on…** and select the `manifest.json` file.
@@ -124,11 +120,7 @@ Made by **Nach** for the [Germs.io](https://germs.io/) community.
 
 ### Chromium / Chrome / Edge / Brave
 
-1. Descarga o clona este repositorio:
-   ```
-   git clone https://github.com/sphynx137/nachgerms.git
-   ```
-   O descarga el `.zip` desde el botón verde **<> Code** y extráelo.
+1. Descarga el `.zip` desde el botón verde **<> Code** y extráelo.
 
 2. Abre `chrome://extensions` en tu navegador.
 3. Activa el **Modo de desarrollador** (esquina superior derecha).
@@ -136,7 +128,7 @@ Made by **Nach** for the [Germs.io](https://germs.io/) community.
 
 ### Firefox
 
-1. Descarga o clona el repositorio.
+1. Descarga el repositorio.
 2. Abre `about:debugging` en Firefox.
 3. Haz clic en **Este Firefox**.
 4. Haz clic en **Cargar complemento temporal…** y selecciona el archivo `manifest.json`.
