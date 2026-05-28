@@ -1,4 +1,4 @@
-// NachGerms — popup.js
+// NachGerms — popup.js.
 // Reads current colors from storage, keeps the popup UI in sync,
 // and writes changes back to chrome.storage.local.
 // Content scripts react via chrome.storage.onChanged — no messaging needed.
