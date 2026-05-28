@@ -1,4 +1,4 @@
-// NachGerms — storage.js
+// NachGerms — storage.js.
 // Abstraction layer for chrome.storage.local.
 // Loaded first so all other scripts can use NachStorage and NACH_DEFAULTS.
 
