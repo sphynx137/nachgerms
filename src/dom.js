@@ -193,3 +193,276 @@ function injectCellBgSelector() {
   trigger.appendChild(flyout);
   cellContainer.appendChild(trigger);
 }
+
+// ─── IN-PAGE NACH PANEL ──────────────────────────────────────────────────────
+
+var CELLBG_LABELS_PANEL = {
+  'default':   'Default',
+  'invisible': 'Transparent',
+  'white':     'White',
+  'black':     'Black'
+};
+
+var CELLBG_BGS = {
+  'default':   'linear-gradient(135deg,#555 50%,#333 50%)',
+  'invisible': 'repeating-conic-gradient(#666 0% 25%,#333 0% 50%) 0 0/8px 8px',
+  'white':     '#ffffff',
+  'black':     '#000000'
+};
+
+function injectNachPanel() {
+  if (document.getElementById('ge-nach-toggle')) return;
+
+  var anchor = document.getElementById('cellContainer');
+  if (!anchor) {
+    var waitObs = new MutationObserver(function () {
+      if (document.getElementById('cellContainer')) { waitObs.disconnect(); injectNachPanel(); }
+    });
+    waitObs.observe(document.body, { childList: true, subtree: true });
+    return;
+  }
+
+  // Wrapper
+  var wrap = document.createElement('div');
+  wrap.id = 'ge-nach-wrap';
+  wrap.style.cssText = 'position:fixed;top:0;left:0;width:0;height:0;z-index:99999;pointer-events:none';
+
+  // Toggle button — extension icon
+  var toggle = document.createElement('div');
+  toggle.id = 'ge-nach-toggle';
+  var iconImg = document.createElement('img');
+  iconImg.src = chrome.runtime.getURL('images/icons/icon-48.png');
+  iconImg.style.cssText = 'width:26px;height:26px;display:block;border-radius:3px';
+  toggle.appendChild(iconImg);
+  toggle.style.cssText = [
+    'position:fixed',
+    'width:38px', 'height:38px',
+    'background:#0d0d0d',
+    'border:2px solid ' + colorUI,
+    'border-radius:6px',
+    'cursor:pointer',
+    'display:flex', 'align-items:center', 'justify-content:center',
+    'pointer-events:all',
+    'user-select:none',
+    'transition:box-shadow .15s,transform .1s',
+    'box-shadow:0 2px 10px rgba(0,0,0,.6)'
+  ].join(';');
+  toggle.addEventListener('mouseenter', function () { toggle.style.transform = 'scale(1.06)'; });
+  toggle.addEventListener('mouseleave', function () { toggle.style.transform = 'scale(1)'; });
+
+  // Panel
+  var panel = document.createElement('div');
+  panel.id = 'ge-nach-panel';
+  panel.style.cssText = [
+    'position:fixed',
+    'width:210px',
+    'background:#0d0d0d',
+    'border:1px solid #222',
+    'border-radius:8px',
+    'color:#aaa',
+    'font-family:Arial,sans-serif', 'font-size:12px',
+    'display:none',
+    'box-shadow:0 4px 24px rgba(0,0,0,.85)',
+    'user-select:none',
+    'overflow:hidden',
+    'pointer-events:all'
+  ].join(';');
+
+  var PANEL_SIZE_WIDTHS = { S: '170px', M: '210px', L: '250px' };
+  var PANEL_SIZE_PADS   = { S: '7px 10px', M: '8px 12px', L: '10px 14px' };
+
+  function applyPanelSize(sz) {
+    panel.style.width = PANEL_SIZE_WIDTHS[sz];
+    panel.querySelectorAll('.ge-np-sec').forEach(function (sec) {
+      sec.style.padding = PANEL_SIZE_PADS[sz];
+    });
+    ['S','M','L'].forEach(function (s) {
+      var btn = document.getElementById('ge-np-sz-' + s);
+      if (btn) btn.style.opacity = s === sz ? '1' : '0.35';
+    });
+    reposition();
+    try { chrome.storage.local.set({ panelSize: sz }); } catch(e) {}
+  }
+
+  panel.innerHTML =
+    // Header
+    '<div class="ge-np-sec" style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #222">' +
+      '<span style="font-size:12px;font-weight:700;letter-spacing:0.5px"><b id="ge-np-title" style="font-weight:900">Nch\u2606</b> Panel</span>' +
+      '<div style="display:flex;align-items:center;gap:5px">' +
+        ['S','M','L'].map(function(s) {
+          return '<span id="ge-np-sz-' + s + '" data-sz="' + s + '" style="font-size:10px;font-weight:700;cursor:pointer;' +
+            'opacity:' + (s === 'M' ? '1' : '0.35') + ';transition:opacity .15s;user-select:none;padding:1px 3px">' + s + '</span>';
+        }).join('<span style="color:#333;font-size:9px">·</span>') +
+      '</div>' +
+    '</div>' +
+
+    // Colors
+    '<div class="ge-np-sec" style="border-bottom:1px solid #1a1a1a">' +
+      '<div id="ge-np-lbl-colores" style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px">Colors</div>' +
+      '<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px">' +
+        '<span id="ge-np-lbl-ui" style="flex:1;font-size:10px;letter-spacing:0.3px">UI / Borders</span>' +
+        '<span id="ge-np-hex-ui" style="font-size:9px;font-family:monospace;min-width:44px;text-align:right"></span>' +
+        '<input type="color" id="ge-np-pick-ui" style="width:24px;height:20px;border:none;background:none;cursor:pointer;padding:0;flex-shrink:0">' +
+      '</div>' +
+      '<div style="display:flex;align-items:center;gap:6px">' +
+        '<span id="ge-np-lbl-fondo" style="flex:1;font-size:10px;color:#888;letter-spacing:0.3px">Background</span>' +
+        '<span id="ge-np-hex-fondo" style="font-size:9px;font-family:monospace;color:#555;min-width:44px;text-align:right"></span>' +
+        '<input type="color" id="ge-np-pick-fondo" style="width:24px;height:20px;border:none;background:none;cursor:pointer;padding:0;flex-shrink:0">' +
+      '</div>' +
+    '</div>' +
+
+    // Cell BG
+    '<div class="ge-np-sec" style="border-bottom:1px solid #1a1a1a">' +
+      '<div id="ge-np-lbl-cellbg" style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px">Cell background</div>' +
+      '<div style="display:flex;align-items:center;gap:5px">' +
+        ['default','invisible','white','black'].map(function(v) {
+          return '<div class="ge-np-copt" data-val="' + v + '" title="' + CELLBG_LABELS_PANEL[v] + '"' +
+            ' style="width:22px;height:22px;border-radius:4px;border:2px solid #444;cursor:pointer;' +
+            'box-sizing:border-box;flex-shrink:0;transition:border-color .15s,transform .1s;' +
+            'background:' + CELLBG_BGS[v] + '"></div>';
+        }).join('') +
+        '<span id="ge-np-cellbg-name" style="font-size:9px;margin-left:2px"></span>' +
+      '</div>' +
+    '</div>' +
+
+    // Reset
+    '<div class="ge-np-sec" style="border-bottom:1px solid #1a1a1a">' +
+      '<button id="ge-np-reset" style="width:100%;padding:5px;background:transparent;border:1px solid #333;' +
+        'border-radius:4px;font-size:10px;cursor:pointer;font-family:Arial,sans-serif;transition:opacity .15s">' +
+        'Restore defaults' +
+      '</button>' +
+    '</div>' +
+
+    // Footer
+    '<div class="ge-np-sec" style="display:flex;align-items:center;justify-content:space-between">' +
+      '<span id="ge-np-compat" style="font-size:9px">\u2713 Germsfox</span>' +
+      '<a id="ge-np-ghlink" href="https://github.com/sphynx137/nachgerms" target="_blank" rel="noopener"' +
+        ' style="font-size:9px;text-decoration:none">GitHub \u2197</a>' +
+    '</div>';
+
+  wrap.appendChild(toggle);
+  wrap.appendChild(panel);
+  document.body.appendChild(wrap);
+
+  // Positioning — always to the right of the right panel
+  function reposition() {
+    var a = document.getElementById('cellContainer');
+    if (!a) return;
+    var par = a.parentElement;
+    var r = par ? par.getBoundingClientRect() : a.getBoundingClientRect();
+    toggle.style.left = (r.right + 6) + 'px';
+    toggle.style.top  = r.top + 'px';
+    panel.style.left  = (r.right + 6) + 'px';
+    panel.style.top   = (r.top + 44) + 'px';
+  }
+  reposition();
+  window.addEventListener('resize', reposition);
+
+  // Wire size buttons
+  ['S','M','L'].forEach(function (s) {
+    var btn = document.getElementById('ge-np-sz-' + s);
+    if (btn) btn.addEventListener('click', function (e) { e.stopPropagation(); applyPanelSize(s); });
+  });
+  try {
+    chrome.storage.local.get({ panelSize: 'M' }, function (d) { applyPanelSize(d.panelSize); });
+  } catch(e) { applyPanelSize('M'); }
+
+  // Toggle open/close
+  toggle.addEventListener('click', function (e) {
+    e.stopPropagation();
+    var open = panel.style.display === 'block';
+    panel.style.display = open ? 'none' : 'block';
+    if (!open) syncPanel();
+  });
+  document.addEventListener('click', function () { panel.style.display = 'none'; });
+  panel.addEventListener('click', function (e) { e.stopPropagation(); });
+
+  // Sync panel from storage
+  function syncPanel() {
+    NachStorage.get(function (data) {
+      var ui    = data.colorUI;
+      var fondo = data.colorFondo;
+      var bg    = data.cellBg;
+
+      toggle.style.borderColor = ui;
+
+      var els = {
+        title:    document.getElementById('ge-np-title'),
+        lblCol:   document.getElementById('ge-np-lbl-colores'),
+        lblUI:    document.getElementById('ge-np-lbl-ui'),
+        lblCellBg:document.getElementById('ge-np-lbl-cellbg'),
+        hexUI:    document.getElementById('ge-np-hex-ui'),
+        hexFondo: document.getElementById('ge-np-hex-fondo'),
+        pickUI:   document.getElementById('ge-np-pick-ui'),
+        pickF:    document.getElementById('ge-np-pick-fondo'),
+        cellName: document.getElementById('ge-np-cellbg-name'),
+        reset:    document.getElementById('ge-np-reset'),
+        compat:   document.getElementById('ge-np-compat'),
+        ghlink:   document.getElementById('ge-np-ghlink')
+      };
+
+      if (els.title)     els.title.style.color     = ui;
+      if (els.lblCol)    els.lblCol.style.color     = ui;
+      if (els.lblUI)     els.lblUI.style.color      = ui;
+      if (els.lblCellBg) els.lblCellBg.style.color  = ui;
+      if (els.hexUI)     { els.hexUI.textContent = ui;    els.hexUI.style.color = ui; }
+      if (els.hexFondo)  els.hexFondo.textContent = fondo;
+      if (els.pickUI)    els.pickUI.value  = ui;
+      if (els.pickF)     els.pickF.value   = fondo;
+      if (els.cellName)  { els.cellName.textContent = CELLBG_LABELS_PANEL[bg] || bg; els.cellName.style.color = ui; }
+      if (els.reset)     { els.reset.style.color = ui; els.reset.style.borderColor = ui + '66'; }
+      if (els.compat)    els.compat.style.color  = ui + 'aa';
+      if (els.ghlink)    {
+        els.ghlink.style.color = ui + 'aa';
+        els.ghlink.onmouseover = function () { els.ghlink.style.color = ui; };
+        els.ghlink.onmouseout  = function () { els.ghlink.style.color = ui + 'aa'; };
+      }
+      ['S','M','L'].forEach(function (s) {
+        var b = document.getElementById('ge-np-sz-' + s);
+        if (b) b.style.color = ui;
+      });
+
+      panel.querySelectorAll('.ge-np-copt').forEach(function (opt) {
+        var active = opt.getAttribute('data-val') === bg;
+        opt.style.borderColor = active ? ui : '#444';
+        opt.style.boxShadow   = active ? '0 0 5px ' + ui : 'none';
+      });
+    });
+  }
+  syncPanel();
+
+  // Wire pickers
+  document.getElementById('ge-np-pick-ui').addEventListener('input', function () {
+    NachStorage.set({ colorUI: this.value });
+    var h = document.getElementById('ge-np-hex-ui');
+    if (h) { h.textContent = this.value; h.style.color = this.value; }
+  });
+  document.getElementById('ge-np-pick-fondo').addEventListener('input', function () {
+    NachStorage.set({ colorFondo: this.value });
+    var h = document.getElementById('ge-np-hex-fondo');
+    if (h) h.textContent = this.value;
+  });
+
+  // Wire cell BG swatches
+  panel.querySelectorAll('.ge-np-copt').forEach(function (opt) {
+    opt.addEventListener('mouseenter', function () { opt.style.transform = 'scale(1.1)'; });
+    opt.addEventListener('mouseleave', function () { opt.style.transform = 'scale(1)'; });
+    opt.addEventListener('click', function () {
+      NachStorage.set({ cellBg: opt.getAttribute('data-val') });
+      syncPanel();
+    });
+  });
+
+  // Reset button
+  var resetBtn = document.getElementById('ge-np-reset');
+  if (resetBtn) {
+    resetBtn.addEventListener('mouseenter', function () { resetBtn.style.opacity = '0.7'; });
+    resetBtn.addEventListener('mouseleave', function () { resetBtn.style.opacity = '1'; });
+    resetBtn.addEventListener('click', function () { NachStorage.set(NACH_DEFAULTS); syncPanel(); });
+  }
+
+  // React to storage changes from popup or other tabs
+  chrome.storage.onChanged.addListener(function (changes, area) {
+    if (area === 'local') syncPanel();
+  });
+}
