@@ -351,10 +351,12 @@ h4#loginName, #loginName, h5#shopName, #shopName {\n\
 /* SHOP TABS */\n\
 #shopTabLocked, #shopTabVeteran, #shopTabPremium, #shopTabCoins, #shopTabBoosts, #shopTabBucks,\n\
 #shopTabLocked > ul, #shopTabVeteran > ul, #shopTabPremium > ul,\n\
-#shopTabCoins > ul, #shopTabBoosts > ul, #shopTabBucks > ul,\n\
+#shopTabCoins > ul, #shopTabBoosts > ul, #shopTabBucks > ul {\n\
+  background-color: transparent !important;\n\
+}\n\
 #shopTabLocked li, #shopTabVeteran li, #shopTabPremium li,\n\
 #shopTabCoins li, #shopTabBoosts li, #shopTabBucks li {\n\
-  background: transparent !important; background-color: transparent !important;\n\
+  background-color: transparent !important;\n\
 }\n\
 \n\
 span#shopCoins, span#shopBucks { background: transparent !important; }\n\
@@ -574,6 +576,55 @@ chrome.storage.onChanged.addListener(function(changes, area) {
   if (activeOpt) activeOpt.style.borderColor = colorUI;
 });
 
+// ─── HIDE PANEL WHILE IN GAME ────────────────────────────────────────────────
+
+function actualizarVisibilidadPanel() {
+  var wrap = document.getElementById('ge-nach-wrap');
+  if (!wrap) return;
+  // Hide while in game
+  if (estaEnJuego()) { wrap.style.display = 'none'; return; }
+  // Hide while any overlay is open
+  var overlays = ['shop', 'settings', 'skins', 'rankings'];
+  for (var i = 0; i < overlays.length; i++) {
+    var el = document.getElementById(overlays[i]);
+    if (el && el.offsetParent !== null && window.getComputedStyle(el).display !== 'none') {
+      wrap.style.display = 'none';
+      return;
+    }
+  }
+  wrap.style.display = '';
+}
+
+new MutationObserver(actualizarVisibilidadPanel)
+  .observe(document.body, { attributes: true, attributeFilter: ['style'], subtree: true });
+
+// ─── FORCE-LOAD SHOP SKIN IMAGES ─────────────────────────────────────────────
+// Germs.io uses lazy loading (data-src) for shop images; NachGerms CSS can
+// prevent the IntersectionObserver from firing, so we copy data-src → src.
+
+function loadShopImages() {
+  document.querySelectorAll('#shopContent img[data-src]').forEach(function(img) {
+    var lazySrc = img.getAttribute('data-src');
+    if (lazySrc && img.getAttribute('src') !== lazySrc) {
+      img.setAttribute('src', lazySrc);
+    }
+  });
+}
+
+// Fire when a shop tab is clicked
+var shopNav = document.getElementById('shopNav');
+if (shopNav) {
+  shopNav.addEventListener('click', function() { setTimeout(loadShopImages, 100); });
+}
+
+// Fire when the shop itself opens (display changes from none → block)
+new MutationObserver(function() {
+  var shop = document.getElementById('shop');
+  if (shop && shop.style.display !== 'none' && shop.offsetParent !== null) {
+    loadShopImages();
+  }
+}).observe(document.body, { attributes: true, attributeFilter: ['style'], subtree: true });
+
 // ─── INIT ────────────────────────────────────────────────────────────────────
 
 function nachInit(data) {
@@ -586,6 +637,7 @@ function nachInit(data) {
   protegerColoresGermsfox();
   aplicarColorModos();
   initXPBar();
+  injectNachPanel();
   setTimeout(injectCellBgSelector, 500);
   [500, 1000, 2000, 4000, 8000].forEach(function(ms) { setTimeout(patchVersionTag, ms); });
 
@@ -595,6 +647,7 @@ function nachInit(data) {
     protegerColoresGermsfox();
     patchVersionTag();
     injectCellBgSelector();
+    loadShopImages();
   }, 2000);
 }
 
