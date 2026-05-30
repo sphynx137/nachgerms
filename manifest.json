@@ -33,5 +33,12 @@
   ],
 
   "permissions": ["storage"],
-  "host_permissions": ["*://*.germs.io/*"]
+  "host_permissions": ["*://*.germs.io/*"],
+
+  "web_accessible_resources": [
+    {
+      "resources": ["images/icons/icon-48.png"],
+      "matches": ["*://*.germs.io/*"]
+    }
+  ]
 }
