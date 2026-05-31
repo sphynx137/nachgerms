@@ -301,11 +301,13 @@ function injectNachPanel() {
       '<div id="ge-np-lbl-colores" style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px">Colors</div>' +
       '<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px">' +
         '<span id="ge-np-lbl-ui" style="flex:1;font-size:10px;letter-spacing:0.3px">UI / Borders</span>' +
+        '<div id="ge-np-prev-ui" style="width:18px;height:18px;border-radius:4px;border:1px solid #333;flex-shrink:0"></div>' +
         '<span id="ge-np-hex-ui" style="font-size:9px;font-family:monospace;min-width:44px;text-align:right"></span>' +
         '<input type="color" id="ge-np-pick-ui" style="width:24px;height:20px;border:none;background:none;cursor:pointer;padding:0;flex-shrink:0">' +
       '</div>' +
       '<div style="display:flex;align-items:center;gap:6px">' +
         '<span id="ge-np-lbl-fondo" style="flex:1;font-size:10px;color:#888;letter-spacing:0.3px">Background</span>' +
+        '<div id="ge-np-prev-fondo" style="width:18px;height:18px;border-radius:4px;border:1px solid #333;flex-shrink:0"></div>' +
         '<span id="ge-np-hex-fondo" style="font-size:9px;font-family:monospace;color:#555;min-width:44px;text-align:right"></span>' +
         '<input type="color" id="ge-np-pick-fondo" style="width:24px;height:20px;border:none;background:none;cursor:pointer;padding:0;flex-shrink:0">' +
       '</div>' +
@@ -333,6 +335,17 @@ function injectNachPanel() {
       '</button>' +
     '</div>' +
 
+    // Menu Size
+    '<div class="ge-np-sec" style="border-bottom:1px solid #1a1a1a">' +
+      '<div id="ge-np-lbl-zoom" style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px">Menu Size</div>' +
+      '<div style="display:flex;align-items:center;gap:6px">' +
+        '<input type="range" id="ge-np-zoom-slider" min="85" max="100" step="1" value="100"' +
+          ' style="flex:1;height:4px;cursor:pointer;accent-color:#00eeff;background:transparent;' +
+          '-webkit-appearance:none;appearance:none">' +
+        '<span id="ge-np-zoom-pct" style="font-size:10px;font-family:monospace;min-width:32px;text-align:right">100%</span>' +
+      '</div>' +
+    '</div>' +
+
     // Footer
     '<div class="ge-np-sec" style="display:flex;align-items:center;justify-content:space-between">' +
       '<span id="ge-np-compat" style="font-size:9px">\u2713 Germsfox</span>' +
@@ -355,6 +368,8 @@ function injectNachPanel() {
     panel.style.left  = (r.right + 6) + 'px';
     panel.style.top   = (r.top + 44) + 'px';
   }
+  // Expose reposition so content.js can call it after zoom changes
+  wrap._reposition = reposition;
   reposition();
   window.addEventListener('resize', reposition);
 
@@ -383,6 +398,7 @@ function injectNachPanel() {
       var ui    = data.colorUI;
       var fondo = data.colorFondo;
       var bg    = data.cellBg;
+      var zoom  = (typeof data.menuZoom === 'number' && isFinite(data.menuZoom)) ? data.menuZoom : 1.0;
 
       toggle.style.borderColor = ui;
 
@@ -391,6 +407,9 @@ function injectNachPanel() {
         lblCol:   document.getElementById('ge-np-lbl-colores'),
         lblUI:    document.getElementById('ge-np-lbl-ui'),
         lblCellBg:document.getElementById('ge-np-lbl-cellbg'),
+        lblZoom:  document.getElementById('ge-np-lbl-zoom'),
+        prevUI:   document.getElementById('ge-np-prev-ui'),
+        prevFondo:document.getElementById('ge-np-prev-fondo'),
         hexUI:    document.getElementById('ge-np-hex-ui'),
         hexFondo: document.getElementById('ge-np-hex-fondo'),
         pickUI:   document.getElementById('ge-np-pick-ui'),
@@ -398,13 +417,18 @@ function injectNachPanel() {
         cellName: document.getElementById('ge-np-cellbg-name'),
         reset:    document.getElementById('ge-np-reset'),
         compat:   document.getElementById('ge-np-compat'),
-        ghlink:   document.getElementById('ge-np-ghlink')
+        ghlink:   document.getElementById('ge-np-ghlink'),
+        zSlider:  document.getElementById('ge-np-zoom-slider'),
+        zPct:     document.getElementById('ge-np-zoom-pct')
       };
 
       if (els.title)     els.title.style.color     = ui;
       if (els.lblCol)    els.lblCol.style.color     = ui;
       if (els.lblUI)     els.lblUI.style.color      = ui;
       if (els.lblCellBg) els.lblCellBg.style.color  = ui;
+      if (els.lblZoom)   els.lblZoom.style.color    = ui;
+      if (els.prevUI)    { els.prevUI.style.background = ui; els.prevUI.style.borderColor = ui; }
+      if (els.prevFondo) { els.prevFondo.style.background = fondo; els.prevFondo.style.borderColor = '#555'; }
       if (els.hexUI)     { els.hexUI.textContent = ui;    els.hexUI.style.color = ui; }
       if (els.hexFondo)  els.hexFondo.textContent = fondo;
       if (els.pickUI)    els.pickUI.value  = ui;
@@ -416,6 +440,14 @@ function injectNachPanel() {
         els.ghlink.style.color = ui + 'aa';
         els.ghlink.onmouseover = function () { els.ghlink.style.color = ui; };
         els.ghlink.onmouseout  = function () { els.ghlink.style.color = ui + 'aa'; };
+      }
+      if (els.zSlider) {
+        els.zSlider.value = Math.round(zoom * 100);
+        els.zSlider.style.accentColor = ui;
+      }
+      if (els.zPct) {
+        els.zPct.textContent = Math.round(zoom * 100) + '%';
+        els.zPct.style.color = ui;
       }
       ['S','M','L'].forEach(function (s) {
         var b = document.getElementById('ge-np-sz-' + s);
@@ -436,11 +468,15 @@ function injectNachPanel() {
     NachStorage.set({ colorUI: this.value });
     var h = document.getElementById('ge-np-hex-ui');
     if (h) { h.textContent = this.value; h.style.color = this.value; }
+    var p = document.getElementById('ge-np-prev-ui');
+    if (p) { p.style.background = this.value; p.style.borderColor = this.value; }
   });
   document.getElementById('ge-np-pick-fondo').addEventListener('input', function () {
     NachStorage.set({ colorFondo: this.value });
     var h = document.getElementById('ge-np-hex-fondo');
     if (h) h.textContent = this.value;
+    var p = document.getElementById('ge-np-prev-fondo');
+    if (p) p.style.background = this.value;
   });
 
   // Wire cell BG swatches
@@ -461,8 +497,27 @@ function injectNachPanel() {
     resetBtn.addEventListener('click', function () { NachStorage.set(NACH_DEFAULTS); syncPanel(); });
   }
 
+  // Wire zoom slider
+  var zSliderEl = document.getElementById('ge-np-zoom-slider');
+  var zPctEl    = document.getElementById('ge-np-zoom-pct');
+  if (zSliderEl) {
+    zSliderEl.addEventListener('input', function () {
+      var pct = parseInt(this.value);
+      if (zPctEl) zPctEl.textContent = pct + '%';
+    });
+    zSliderEl.addEventListener('change', function () {
+      var pct = parseInt(this.value);
+      if (zPctEl) zPctEl.textContent = pct + '%';
+      applyZoom(pct / 100);
+      setTimeout(reposition, 50);
+    });
+  }
+
   // React to storage changes from popup or other tabs
   chrome.storage.onChanged.addListener(function (changes, area) {
-    if (area === 'local') syncPanel();
+    if (area === 'local') {
+      syncPanel();
+      if (changes.menuZoom) setTimeout(reposition, 50);
+    }
   });
 }
