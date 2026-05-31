@@ -5,7 +5,8 @@
 var NACH_DEFAULTS = {
   colorUI:    '#00eeff',
   colorFondo: '#000000',
-  cellBg:     'default'
+  cellBg:     'default',
+  menuZoom:   1.0
 };
 
 var NachStorage = {
