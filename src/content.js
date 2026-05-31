@@ -22,6 +22,34 @@ var CLASES_EXCLUIDAS = [
 var colorUI    = NACH_DEFAULTS.colorUI;
 var colorFondo = NACH_DEFAULTS.colorFondo;
 var cellBg     = NACH_DEFAULTS.cellBg;
+var menuZoom   = NACH_DEFAULTS.menuZoom;
+
+// ─── MENU ZOOM ────────────────────────────────────────────────────────────────
+
+function _clamp(val, min, max) { return Math.min(Math.max(val, min), max); }
+
+function _setZoom() {
+  var el = document.getElementById('menuContainer');
+  if (!el) return;
+  var t = 'scale(' + menuZoom + ')';
+  if (el.style.transform !== t) {
+    el.style.transform = t;
+    el.style.transformOrigin = 'center top';
+  }
+}
+
+function applyZoom(val) {
+  menuZoom = _clamp(parseFloat(parseFloat(val).toFixed(2)), 0.85, 1.0);
+  NachStorage.set({ menuZoom: menuZoom });
+  _setZoom();
+  if (!applyZoom._obs) {
+    applyZoom._obs = new MutationObserver(function() { _setZoom(); });
+    applyZoom._obs.observe(document.body, {
+      childList: true, subtree: true,
+      attributes: true, attributeFilter: ['style', 'class']
+    });
+  }
+}
 
 // ─── DETECCIÓN DE ESTADO ─────────────────────────────────────────────────────
 // Cuando el botón Play no está visible, el jugador está en partida.
@@ -566,6 +594,13 @@ chrome.storage.onChanged.addListener(function(changes, area) {
   if (changes.colorUI)    colorUI    = changes.colorUI.newValue;
   if (changes.colorFondo) colorFondo = changes.colorFondo.newValue;
   if (changes.cellBg)     cellBg     = changes.cellBg.newValue;
+  if (changes.menuZoom) {
+    menuZoom = changes.menuZoom.newValue;
+    _setZoom();
+    // Re-position the in-page panel after the menu rescales
+    var nachWrap = document.getElementById('ge-nach-wrap');
+    if (nachWrap && nachWrap._reposition) nachWrap._reposition();
+  }
   aplicarEstilos(colorUI, colorFondo);
   aplicarColorTexto(colorUI);
   protegerColoresGermsfox();
@@ -631,6 +666,7 @@ function nachInit(data) {
   colorUI    = data.colorUI;
   colorFondo = data.colorFondo;
   cellBg     = data.cellBg;
+  menuZoom   = (typeof data.menuZoom === 'number' && isFinite(data.menuZoom)) ? data.menuZoom : 1.0;
 
   aplicarEstilos(colorUI, colorFondo);
   aplicarColorTexto(colorUI);
@@ -640,6 +676,8 @@ function nachInit(data) {
   injectNachPanel();
   setTimeout(injectCellBgSelector, 500);
   [500, 1000, 2000, 4000, 8000].forEach(function(ms) { setTimeout(patchVersionTag, ms); });
+
+  if (menuZoom < 1.0) applyZoom(menuZoom);
 
   setTimeout(function() {
     aplicarEstilos(colorUI, colorFondo);
