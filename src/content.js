@@ -611,6 +611,20 @@ chrome.storage.onChanged.addListener(function(changes, area) {
   if (activeOpt) activeOpt.style.borderColor = colorUI;
 });
 
+// Live color preview from popup (bypasses storage round-trip)
+chrome.runtime.onMessage.addListener(function(msg) {
+  if (!msg || msg.type !== 'NACH_LIVE') return;
+  if (msg.data.colorUI !== undefined)    colorUI    = msg.data.colorUI;
+  if (msg.data.colorFondo !== undefined) colorFondo = msg.data.colorFondo;
+  aplicarEstilos(colorUI, colorFondo);
+  aplicarColorTexto(colorUI);
+  protegerColoresGermsfox();
+  var trigger = document.getElementById('ge-cellbg-selector');
+  if (trigger) trigger.style.borderColor = colorUI;
+  var activeOpt = document.querySelector('#ge-cellbg-popup [data-cellval="' + cellBg + '"]');
+  if (activeOpt) activeOpt.style.borderColor = colorUI;
+});
+
 // ─── HIDE PANEL WHILE IN GAME ────────────────────────────────────────────────
 
 function actualizarVisibilidadPanel() {
