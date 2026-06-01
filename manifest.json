@@ -11,13 +11,17 @@
   },
 
   "action": {
-    "default_popup": "src/popup.html",
+    "default_popup": "src/welcome.html",
     "default_title": "NachGerms UI Panel",
     "default_icon": {
       "16":  "images/icons/icon-16.png",
       "48":  "images/icons/icon-48.png",
       "128": "images/icons/icon-128.png"
     }
+  },
+
+  "background": {
+    "service_worker": "src/background.js"
   },
 
   "content_scripts": [
@@ -32,13 +36,13 @@
     }
   ],
 
-  "permissions": ["storage"],
+  "permissions": ["storage", "tabs"],
   "host_permissions": ["*://*.germs.io/*"],
 
   "web_accessible_resources": [
     {
-      "resources": ["images/icons/icon-48.png"],
-      "matches": ["*://*.germs.io/*"]
+      "resources": ["images/icons/icon-48.png", "src/welcome.html"],
+      "matches": ["<all_urls>"]
     }
   ]
 }
