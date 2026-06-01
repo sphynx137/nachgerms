@@ -1,7 +1,7 @@
 {
   "name": "NachGerms — UI Panel",
   "version": "1.2.9",
-  "description": "Color de interfaz (bordes + texto) y fondo personalizables para Germs.io. Compatible con Germsfox.",
+  "description": "Customize the interface (border and background) of the Germs.io menu. Compatible with Germsfox.",
   "manifest_version": 3,
 
   "icons": {
