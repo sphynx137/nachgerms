@@ -1,2 +1,8 @@
 // NachGerms — background service worker
-self.addEventListener('install', () => {});
+
+// Open welcome page on first install
+chrome.runtime.onInstalled.addListener(function (details) {
+  if (details.reason === 'install') {
+    chrome.tabs.create({ url: chrome.runtime.getURL('src/welcome.html') });
+  }
+});
