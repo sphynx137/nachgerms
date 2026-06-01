@@ -301,15 +301,17 @@ function injectNachPanel() {
       '<div id="ge-np-lbl-colores" style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px">Colors</div>' +
       '<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px">' +
         '<span id="ge-np-lbl-ui" style="flex:1;font-size:10px;letter-spacing:0.3px">UI / Borders</span>' +
-        '<div id="ge-np-prev-ui" style="width:18px;height:18px;border-radius:4px;border:1px solid #333;flex-shrink:0"></div>' +
         '<span id="ge-np-hex-ui" style="font-size:9px;font-family:monospace;min-width:44px;text-align:right"></span>' +
-        '<input type="color" id="ge-np-pick-ui" style="width:24px;height:20px;border:none;background:none;cursor:pointer;padding:0;flex-shrink:0">' +
+        '<div id="ge-np-swatch-ui" style="position:relative;width:20px;height:20px;border-radius:4px;border:2px solid #444;flex-shrink:0;overflow:hidden;cursor:pointer">' +
+          '<input type="color" id="ge-np-pick-ui" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:none;padding:0">' +
+        '</div>' +
       '</div>' +
       '<div style="display:flex;align-items:center;gap:6px">' +
         '<span id="ge-np-lbl-fondo" style="flex:1;font-size:10px;color:#888;letter-spacing:0.3px">Background</span>' +
-        '<div id="ge-np-prev-fondo" style="width:18px;height:18px;border-radius:4px;border:1px solid #333;flex-shrink:0"></div>' +
         '<span id="ge-np-hex-fondo" style="font-size:9px;font-family:monospace;color:#555;min-width:44px;text-align:right"></span>' +
-        '<input type="color" id="ge-np-pick-fondo" style="width:24px;height:20px;border:none;background:none;cursor:pointer;padding:0;flex-shrink:0">' +
+        '<div id="ge-np-swatch-fondo" style="position:relative;width:20px;height:20px;border-radius:4px;border:2px solid #444;flex-shrink:0;overflow:hidden;cursor:pointer">' +
+          '<input type="color" id="ge-np-pick-fondo" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:none;padding:0">' +
+        '</div>' +
       '</div>' +
     '</div>' +
 
@@ -346,12 +348,7 @@ function injectNachPanel() {
       '</div>' +
     '</div>' +
 
-    // Footer
-    '<div class="ge-np-sec" style="display:flex;align-items:center;justify-content:space-between">' +
-      '<span id="ge-np-compat" style="font-size:9px">\u2713 Germsfox</span>' +
-      '<a id="ge-np-ghlink" href="https://github.com/sphynx137/nachgerms" target="_blank" rel="noopener"' +
-        ' style="font-size:9px;text-decoration:none">GitHub \u2197</a>' +
-    '</div>';
+    '';
 
   wrap.appendChild(toggle);
   wrap.appendChild(panel);
@@ -408,16 +405,12 @@ function injectNachPanel() {
         lblUI:    document.getElementById('ge-np-lbl-ui'),
         lblCellBg:document.getElementById('ge-np-lbl-cellbg'),
         lblZoom:  document.getElementById('ge-np-lbl-zoom'),
-        prevUI:   document.getElementById('ge-np-prev-ui'),
-        prevFondo:document.getElementById('ge-np-prev-fondo'),
         hexUI:    document.getElementById('ge-np-hex-ui'),
         hexFondo: document.getElementById('ge-np-hex-fondo'),
         pickUI:   document.getElementById('ge-np-pick-ui'),
         pickF:    document.getElementById('ge-np-pick-fondo'),
         cellName: document.getElementById('ge-np-cellbg-name'),
         reset:    document.getElementById('ge-np-reset'),
-        compat:   document.getElementById('ge-np-compat'),
-        ghlink:   document.getElementById('ge-np-ghlink'),
         zSlider:  document.getElementById('ge-np-zoom-slider'),
         zPct:     document.getElementById('ge-np-zoom-pct')
       };
@@ -425,22 +418,22 @@ function injectNachPanel() {
       if (els.title)     els.title.style.color     = ui;
       if (els.lblCol)    els.lblCol.style.color     = ui;
       if (els.lblUI)     els.lblUI.style.color      = ui;
+      var lblFondo = document.getElementById('ge-np-lbl-fondo');
+      if (lblFondo) lblFondo.style.color = ui;
+      var hexFondoEl = document.getElementById('ge-np-hex-fondo');
+      if (hexFondoEl) hexFondoEl.style.color = ui;
       if (els.lblCellBg) els.lblCellBg.style.color  = ui;
       if (els.lblZoom)   els.lblZoom.style.color    = ui;
-      if (els.prevUI)    { els.prevUI.style.background = ui; els.prevUI.style.borderColor = ui; }
-      if (els.prevFondo) { els.prevFondo.style.background = fondo; els.prevFondo.style.borderColor = '#555'; }
+      if (els.pickUI)    { els.pickUI.value = ui; }
+      if (els.pickF)     { els.pickF.value  = fondo; }
+      var swUI = document.getElementById('ge-np-swatch-ui');
+      var swF  = document.getElementById('ge-np-swatch-fondo');
+      if (swUI) swUI.style.background = ui;
+      if (swF)  swF.style.background  = fondo;
       if (els.hexUI)     { els.hexUI.textContent = ui;    els.hexUI.style.color = ui; }
       if (els.hexFondo)  els.hexFondo.textContent = fondo;
-      if (els.pickUI)    els.pickUI.value  = ui;
-      if (els.pickF)     els.pickF.value   = fondo;
       if (els.cellName)  { els.cellName.textContent = CELLBG_LABELS_PANEL[bg] || bg; els.cellName.style.color = ui; }
       if (els.reset)     { els.reset.style.color = ui; els.reset.style.borderColor = ui + '66'; }
-      if (els.compat)    els.compat.style.color  = ui + 'aa';
-      if (els.ghlink)    {
-        els.ghlink.style.color = ui + 'aa';
-        els.ghlink.onmouseover = function () { els.ghlink.style.color = ui; };
-        els.ghlink.onmouseout  = function () { els.ghlink.style.color = ui + 'aa'; };
-      }
       if (els.zSlider) {
         els.zSlider.value = Math.round(zoom * 100);
         els.zSlider.style.accentColor = ui;
@@ -463,20 +456,79 @@ function injectNachPanel() {
   }
   syncPanel();
 
-  // Wire pickers
-  document.getElementById('ge-np-pick-ui').addEventListener('input', function () {
-    NachStorage.set({ colorUI: this.value });
+  // Wire pickers — throttled aplicarEstilos (max 20/s), save to storage on release
+  var pickUI    = document.getElementById('ge-np-pick-ui');
+  var pickFondo = document.getElementById('ge-np-pick-fondo');
+  var _estTimer   = null;
+  var _estPending = {};
+  function _applyLive(patch) {
+    Object.assign(_estPending, patch);
+    if (_estTimer) return;
+    _estTimer = setTimeout(function () {
+      _estTimer = null;
+      if (_estPending.colorUI !== undefined)    colorUI    = _estPending.colorUI;
+      if (_estPending.colorFondo !== undefined) colorFondo = _estPending.colorFondo;
+      _estPending = {};
+      aplicarEstilos(colorUI, colorFondo);
+      aplicarColorTexto(colorUI);
+
+      // Sync all panel text elements to new colorUI
+      var ui = colorUI;
+      toggle.style.borderColor = ui;
+      var ids = ['ge-np-title','ge-np-lbl-colores','ge-np-lbl-ui','ge-np-lbl-cellbg',
+                 'ge-np-lbl-zoom','ge-np-hex-ui','ge-np-cellbg-name','ge-np-reset',
+                 'ge-np-lbl-fondo','ge-np-hex-fondo'];
+      ids.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        if (id === 'ge-np-reset') { el.style.color = ui; el.style.borderColor = ui + '66'; }
+        else if (id === 'ge-np-compat') el.style.color = ui + 'aa';
+        else el.style.color = ui;
+      });
+      var zPct = document.getElementById('ge-np-zoom-pct');
+      if (zPct) zPct.style.color = ui;
+      var zSlider = document.getElementById('ge-np-zoom-slider');
+      if (zSlider) zSlider.style.accentColor = ui;
+      ['S','M','L'].forEach(function(s) {
+        var b = document.getElementById('ge-np-sz-' + s);
+        if (b) b.style.color = ui;
+      });
+      panel.querySelectorAll('.ge-np-copt').forEach(function(opt) {
+        var active = opt.getAttribute('data-val') === cellBg;
+        opt.style.borderColor = active ? ui : '#444';
+        opt.style.boxShadow   = active ? '0 0 5px ' + ui : 'none';
+      });
+      var cellNameEl = document.getElementById('ge-np-cellbg-name');
+      if (cellNameEl) cellNameEl.style.color = ui;
+      var cellTrigger = document.getElementById('ge-cellbg-selector');
+      if (cellTrigger) cellTrigger.style.borderColor = ui;
+      var activeOpt = document.querySelector('#ge-cellbg-popup [data-cellval="' + cellBg + '"]');
+      if (activeOpt) activeOpt.style.borderColor = ui;
+    }, 50);
+  }
+
+  pickUI.addEventListener('input', function () {
+    colorUI = this.value;
     var h = document.getElementById('ge-np-hex-ui');
-    if (h) { h.textContent = this.value; h.style.color = this.value; }
-    var p = document.getElementById('ge-np-prev-ui');
-    if (p) { p.style.background = this.value; p.style.borderColor = this.value; }
+    if (h) { h.textContent = colorUI; h.style.color = colorUI; }
+    var sw = document.getElementById('ge-np-swatch-ui');
+    if (sw) sw.style.background = colorUI;
+    _applyLive({ colorUI: colorUI });
   });
-  document.getElementById('ge-np-pick-fondo').addEventListener('input', function () {
-    NachStorage.set({ colorFondo: this.value });
+  pickUI.addEventListener('change', function () {
+    NachStorage.set({ colorUI: colorUI });
+  });
+
+  pickFondo.addEventListener('input', function () {
+    colorFondo = this.value;
     var h = document.getElementById('ge-np-hex-fondo');
-    if (h) h.textContent = this.value;
-    var p = document.getElementById('ge-np-prev-fondo');
-    if (p) p.style.background = this.value;
+    if (h) h.textContent = colorFondo;
+    var sw = document.getElementById('ge-np-swatch-fondo');
+    if (sw) sw.style.background = colorFondo;
+    _applyLive({ colorFondo: colorFondo });
+  });
+  pickFondo.addEventListener('change', function () {
+    NachStorage.set({ colorFondo: colorFondo });
   });
 
   // Wire cell BG swatches
