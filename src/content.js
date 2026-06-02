@@ -166,13 +166,13 @@ button.btn-info, .btn.btn-info, a.btn-info {\n\
 }\n\
 \n\
 /* BTN-PRIMARY */\n\
-.btn-primary:not(label), button.btn-primary, a.btn-primary,\n\
-.btn.btn-primary:not(label), .btn-sm.btn-primary:not(label) {\n\
+.btn-primary, button.btn-primary, a.btn-primary,\n\
+.btn.btn-primary, .btn-sm.btn-primary {\n\
   background-color: ' + fondo + ' !important;\n\
   border: 2px solid ' + ui + ' !important;\n\
   color: ' + ui + ' !important;\n\
 }\n\
-.btn-primary:hover:not(label), button.btn-primary:hover {\n\
+.btn-primary:hover, button.btn-primary:hover {\n\
   background-color: ' + ui + '22 !important;\n\
 }\n\
 \n\
@@ -289,10 +289,32 @@ div.gm.active { background-color: ' + ui + ' !important; border: 2px solid ' + f
 \n\
 /* GERMSFOX PANEL */\n\
 #germsfoxSettingsCard { background-color: ' + fondo + ' !important; }\n\
-#germsfoxSettingsTabsContent, #germsfox-settings-general,\n\
-#germsfox-settings-controls, #germsfox-settings-theme,\n\
-#germsfox-settings-blocklist { background-color: transparent !important; }\n\
-#germsfoxSettingsTabs { background-color: transparent !important; }\n\
+\n\
+/* Override germsfox style.css rgba overlay backgrounds (raiz de las cajas grises) */\n\
+#germsfoxSettingsTabsContent {\n\
+  background: transparent !important;\n\
+  background-color: transparent !important;\n\
+}\n\
+#germsfoxSettingsTabs {\n\
+  background: transparent !important;\n\
+  background-color: transparent !important;\n\
+}\n\
+#germsfox-settings-general p,\n\
+#germsfox-settings-theme p {\n\
+  background: transparent !important;\n\
+  background-color: transparent !important;\n\
+}\n\
+\n\
+/* Remove border/shadow applied by nachgerms general rules on Bootstrap layout elements inside the card */\n\
+#germsfoxSettingsCard .row,\n\
+#germsfoxSettingsCard [class^="col-"],\n\
+#germsfoxSettingsCard [class*=" col-"],\n\
+#germsfoxSettingsCard .clearfix,\n\
+#germsfoxSettingsCard .input-group {\n\
+  background-color: transparent !important;\n\
+  border: none !important;\n\
+  box-shadow: none !important;\n\
+}\n\
 \n\
 i.fa-coins, .fa-coins { color: #ffd700 !important; }\n\
 \n\
@@ -435,12 +457,6 @@ span#ge-gf-label, span#ge-gf-label * {\n\
 .ge-cell-opt[data-val="invisible"] { background: repeating-conic-gradient(#666 0% 25%,#333 0% 50%) 0 0/10px 10px; }\n\
 .ge-cell-opt[data-val="white"]     { background: #ffffff; }\n\
 .ge-cell-opt[data-val="black"]     { background: #000000; }\n\
-/* LOCKED NAME PANELS */\n\
-#loginCustomLocked, #loginCustomLockedName {\n\
-  background: transparent !important;\n\
-  box-shadow: none !important;\n\
-}\n\
-\n\
 /* GERMSFOX PANEL TEXT */\n\
 #germsfoxSettingsCard p,\n\
 #germsfoxSettingsCard label:not(.btn),\n\
@@ -451,17 +467,11 @@ span#ge-gf-label, span#ge-gf-label * {\n\
 #germsfox-settings-general label:not(.btn),\n\
 #germsfox-settings-controls p,\n\
 #germsfox-settings-controls label:not(.btn),\n\
-#germsfox-settings-controls div[style*="font-size"],\n\
-#germsfox-settings-general div[style*="font-size"] {\n\
+#germsfox-settings-general .col-md-6[style*="text-align: left"],\n\
+#germsfox-settings-controls .col-md-6[style*="text-align: left"],\n\
+#germsfox-settings-theme .col-md-6[style*="text-align: left"] {\n\
   color: ' + ui + ' !important;\n\
 }\n\
-#germsfox-settings-general label.btn,\n\
-#germsfox-settings-controls label.btn {\n\
-  color: #fff !important;\n\
-  border: 2px solid ' + ui + ' !important;\n\
-  border-radius: 6px !important;\n\
-}\n\
-\n\
 /* SETTINGS GAME TEXT */\n\
 #settings-controls p, #settings-controls label,\n\
 #settings-controls div[style*="font-size"],\n\
@@ -506,14 +516,6 @@ function aplicarColorTexto(ui) {
         if (clase.includes(CLASES_EXCLUIDAS[c])) return;
       }
       if (el.id === 'cellName') return;
-      if (el.classList && el.classList.contains('btn')) return;
-      if (el.tagName === 'LABEL' && el.getAttribute('for') === 'skinsInput') return;
-      if (el.tagName === 'LABEL' && (
-        el.closest('#germsfoxSettingsModal') ||
-        el.closest('#germsfoxSettingsCard') ||
-        el.closest('.germsfox-modal') ||
-        el.closest('[id^="germsfox"]')
-      )) return;
       if (el.classList && el.classList.contains('fa-play')) {
         el.style.setProperty('color', colorFondo, 'important'); return;
       }
@@ -559,14 +561,6 @@ function protegerColoresGermsfox() {
     if (el.closest('#lockedButtons') && el.tagName === 'P') return;
     if (el.closest('span#loginCoins') && (el.tagName === 'A' || el.closest('a'))) return;
     if (el.closest('span#loginBucks') && (el.tagName === 'A' || el.closest('a'))) return;
-    if (el.classList && el.classList.contains('btn')) return;
-    if (el.tagName === 'LABEL' && el.getAttribute('for') === 'skinsInput') return;
-    if (el.tagName === 'LABEL' && (
-      el.closest('#germsfoxSettingsModal') ||
-      el.closest('#germsfoxSettingsCard') ||
-      el.closest('.germsfox-modal') ||
-      el.closest('[id^="germsfox"]')
-    )) return;
     var c = el.style.color;
     if (c) el.style.setProperty('color', c, 'important');
   });
