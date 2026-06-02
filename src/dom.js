@@ -237,7 +237,7 @@ function injectNachPanel() {
   toggle.style.cssText = [
     'position:fixed',
     'width:38px', 'height:38px',
-    'background:#0d0d0d',
+    'background:' + colorFondo,
     'border:2px solid ' + colorUI,
     'border-radius:6px',
     'cursor:pointer',
@@ -256,8 +256,8 @@ function injectNachPanel() {
   panel.style.cssText = [
     'position:fixed',
     'width:210px',
-    'background:#0d0d0d',
-    'border:1px solid #222',
+    'background:' + colorFondo,
+    'border:1px solid ' + colorUI,
     'border-radius:8px',
     'color:#aaa',
     'font-family:Arial,sans-serif', 'font-size:12px',
@@ -285,8 +285,11 @@ function injectNachPanel() {
   }
 
   panel.innerHTML =
+    // Dynamic style (updated live by _setPanelDynStyle)
+    '<style id="ge-np-dyn"></style>' +
+
     // Header
-    '<div class="ge-np-sec" style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #222">' +
+    '<div class="ge-np-sec" style="display:flex;align-items:center;justify-content:space-between">' +
       '<span style="font-size:12px;font-weight:700;letter-spacing:0.5px"><b id="ge-np-title" style="font-weight:900">Nch\u2606</b> Panel</span>' +
       '<div style="display:flex;align-items:center;gap:5px">' +
         ['S','M','L'].map(function(s) {
@@ -297,27 +300,27 @@ function injectNachPanel() {
     '</div>' +
 
     // Colors
-    '<div class="ge-np-sec" style="border-bottom:1px solid #1a1a1a">' +
-      '<div id="ge-np-lbl-colores" style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px">Colors</div>' +
+    '<div class="ge-np-sec">' +
+      '<div id="ge-np-lbl-colores" style="font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px">Colors</div>' +
       '<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px">' +
         '<span id="ge-np-lbl-ui" style="flex:1;font-size:10px;letter-spacing:0.3px">UI / Borders</span>' +
         '<span id="ge-np-hex-ui" style="font-size:9px;font-family:monospace;min-width:44px;text-align:right"></span>' +
-        '<div id="ge-np-swatch-ui" style="position:relative;width:20px;height:20px;border-radius:4px;border:2px solid #444;flex-shrink:0;overflow:hidden;cursor:pointer">' +
+        '<div id="ge-np-swatch-ui" style="position:relative;width:20px;height:20px;border-radius:4px;border:2px solid ' + colorUI + ';flex-shrink:0;overflow:hidden;cursor:pointer">' +
           '<input type="color" id="ge-np-pick-ui" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:none;padding:0">' +
         '</div>' +
       '</div>' +
       '<div style="display:flex;align-items:center;gap:6px">' +
         '<span id="ge-np-lbl-fondo" style="flex:1;font-size:10px;color:#888;letter-spacing:0.3px">Background</span>' +
         '<span id="ge-np-hex-fondo" style="font-size:9px;font-family:monospace;color:#555;min-width:44px;text-align:right"></span>' +
-        '<div id="ge-np-swatch-fondo" style="position:relative;width:20px;height:20px;border-radius:4px;border:2px solid #444;flex-shrink:0;overflow:hidden;cursor:pointer">' +
+        '<div id="ge-np-swatch-fondo" style="position:relative;width:20px;height:20px;border-radius:4px;border:2px solid ' + colorUI + ';flex-shrink:0;overflow:hidden;cursor:pointer">' +
           '<input type="color" id="ge-np-pick-fondo" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:none;padding:0">' +
         '</div>' +
       '</div>' +
     '</div>' +
 
     // Cell BG
-    '<div class="ge-np-sec" style="border-bottom:1px solid #1a1a1a">' +
-      '<div id="ge-np-lbl-cellbg" style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px">Cell background</div>' +
+    '<div class="ge-np-sec">' +
+      '<div id="ge-np-lbl-cellbg" style="font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px">Cell background</div>' +
       '<div style="display:flex;align-items:center;gap:5px">' +
         ['default','invisible','white','black'].map(function(v) {
           return '<div class="ge-np-copt" data-val="' + v + '" title="' + CELLBG_LABELS_PANEL[v] + '"' +
@@ -330,7 +333,7 @@ function injectNachPanel() {
     '</div>' +
 
     // Reset
-    '<div class="ge-np-sec" style="border-bottom:1px solid #1a1a1a">' +
+    '<div class="ge-np-sec">' +
       '<button id="ge-np-reset" style="width:100%;padding:5px;background:transparent;border:1px solid #333;' +
         'border-radius:4px;font-size:10px;cursor:pointer;font-family:Arial,sans-serif;transition:opacity .15s">' +
         'Restore defaults' +
@@ -338,7 +341,7 @@ function injectNachPanel() {
     '</div>' +
 
     // Menu Size
-    '<div class="ge-np-sec" style="border-bottom:1px solid #1a1a1a">' +
+    '<div class="ge-np-sec">' +
       '<div id="ge-np-lbl-zoom" style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px">Menu Size</div>' +
       '<div style="display:flex;align-items:center;gap:6px">' +
         '<input type="range" id="ge-np-zoom-slider" min="85" max="100" step="1" value="100"' +
@@ -389,6 +392,18 @@ function injectNachPanel() {
   document.addEventListener('click', function () { panel.style.display = 'none'; });
   panel.addEventListener('click', function (e) { e.stopPropagation(); });
 
+  // Dynamic style: panel border + section dividers + swatch borders — all linked to UI color
+  function _setPanelDynStyle(ui) {
+    var el = document.getElementById('ge-np-dyn');
+    if (!el) return;
+    el.textContent = [
+      '#ge-nach-panel { border-color: ' + ui + ' !important; }',
+      '#ge-nach-panel .ge-np-sec { border-bottom: 1px solid ' + ui + '44; }',
+      '#ge-nach-panel .ge-np-sec:last-child { border-bottom: none; }',
+      '#ge-np-swatch-ui, #ge-np-swatch-fondo { border-color: ' + ui + ' !important; }'
+    ].join(' ');
+  }
+
   // Sync panel from storage
   function syncPanel() {
     NachStorage.get(function (data) {
@@ -398,6 +413,9 @@ function injectNachPanel() {
       var zoom  = (typeof data.menuZoom === 'number' && isFinite(data.menuZoom)) ? data.menuZoom : 1.0;
 
       toggle.style.borderColor = ui;
+      toggle.style.background  = fondo;
+      panel.style.background   = fondo;
+      _setPanelDynStyle(ui);
 
       var els = {
         title:    document.getElementById('ge-np-title'),
@@ -474,7 +492,11 @@ function injectNachPanel() {
 
       // Sync all panel text elements to new colorUI
       var ui = colorUI;
+      var fondo = colorFondo;
       toggle.style.borderColor = ui;
+      toggle.style.background  = fondo;
+      panel.style.background   = fondo;
+      _setPanelDynStyle(ui);
       var ids = ['ge-np-title','ge-np-lbl-colores','ge-np-lbl-ui','ge-np-lbl-cellbg',
                  'ge-np-lbl-zoom','ge-np-hex-ui','ge-np-cellbg-name','ge-np-reset',
                  'ge-np-lbl-fondo','ge-np-hex-fondo'];
