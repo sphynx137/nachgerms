@@ -45,18 +45,21 @@
 
 ## Features
 
-- **Customizable UI color**
-- **Customizable background**
-- **Cell background**
+- **Customizable UI color** — borders, inputs, and text
+- **Customizable background** — all panels
+- **Cell background** — choose between Default, Transparent, White, or Black
+- **Menu Size** — scale the game menu (85%–100%) without glitches
+- **Panel sizes S / M / L** — choose how large the in-game panel appears (default: M)
 - **Enhanced XP bar**
+- **Real-time color preview** — colors update live as you drag the picker
 - All settings are saved automatically and persist between sessions.
+- Clicking **Restore defaults** resets all values including panel size.
 
 ## Installation
 
 ### Chromium / Chrome / Edge / Brave
 
 1. Download the `.zip` from the green **<> Code** button and extract it.
-
 2. Open `chrome://extensions` in your browser.
 3. Enable **Developer mode** (top right corner).
 4. Click **Load unpacked** and select the repository folder.
@@ -72,14 +75,16 @@
 
 ## Usage
 
-Once installed, go to [germs.io](https://germs.io/) and click the extension icon in the browser toolbar to open the panel:
+Once installed, go to [germs.io](https://germs.io/) and look for the **Nch☆** toggle on the left side of the menu to open the in-game panel. You can also click the extension icon in the browser toolbar to see the welcome message.
 
 | Control | Function |
 |---|---|
 | **UI / Borders** | Primary color for borders, inputs, and text |
 | **Background** | Background color for all panels |
 | **Cell background** | Background visible behind your cell |
-| **Restore** | Resets all values to their defaults |
+| **Menu Size** | Scales the game menu (apply on mouse release) |
+| **S / M / L** | Panel display size |
+| **Restore defaults** | Resets all values to their defaults |
 
 You can also change the **Cell BG directly in-game** — look for the small square button in the bottom-left corner of your cell.
 
@@ -110,18 +115,21 @@ Made by **Nach** for the [Germs.io](https://germs.io/) community.
 
 ## Características
 
-- **Color UI personalizable**
-- **Fondo personalizable**
-- **Cell background**
+- **Color UI personalizable** — bordes, inputs y texto
+- **Fondo personalizable** — todos los paneles
+- **Cell background** — elegí entre Default, Transparente, Blanco o Negro
+- **Menu Size** — escala el menú del juego (85%–100%) sin glitches
+- **Tamaños de panel S / M / L** — elegí qué tan grande se ve el panel en el juego (por defecto: M)
 - **XP bar mejorada**
+- **Vista previa de color en tiempo real** — los colores se actualizan en vivo al mover el picker
 - Todos los ajustes se guardan automáticamente y persisten entre sesiones.
+- Al hacer clic en **Restaurar defaults** se reinician todos los valores incluyendo el tamaño del panel.
 
 ## Instalación
 
 ### Chromium / Chrome / Edge / Brave
 
 1. Descarga el `.zip` desde el botón verde **<> Code** y extráelo.
-
 2. Abre `chrome://extensions` en tu navegador.
 3. Activa el **Modo de desarrollador** (esquina superior derecha).
 4. Haz clic en **Cargar descomprimida** y selecciona la carpeta del repositorio.
@@ -137,16 +145,18 @@ Made by **Nach** for the [Germs.io](https://germs.io/) community.
 
 ## Uso
 
-Una vez instalada, entra a [germs.io](https://germs.io/) y haz clic en el ícono de la extensión en la barra del navegador para abrir el panel:
+Una vez instalada, entra a [germs.io](https://germs.io/) y buscá el botón **Nch☆** a la izquierda del menú para abrir el panel en el juego. También podés hacer clic en el ícono de la extensión en la barra del navegador para ver el mensaje de bienvenida.
 
 | Control | Función |
 |---|---|
 | **UI / Bordes** | Color principal de bordes, inputs y texto |
 | **Fondo** | Color de fondo de todos los paneles |
 | **Cell background** | Fondo visible detrás de tu celda |
-| **Restaurar** | Vuelve a los valores por defecto |
+| **Menu Size** | Escala el menú del juego (se aplica al soltar el mouse) |
+| **S / M / L** | Tamaño de visualización del panel |
+| **Restaurar defaults** | Vuelve a los valores por defecto |
 
-También puedes cambiar el **Cell BG directamente en el juego** — busca el pequeño botón cuadrado en la esquina inferior izquierda de tu celda.
+También podés cambiar el **Cell BG directamente en el juego** — buscá el pequeño botón cuadrado en la esquina inferior izquierda de tu celda.
 
 ## Créditos
 
