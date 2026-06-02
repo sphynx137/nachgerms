@@ -74,11 +74,11 @@
 
 ## Usage
 
-Once installed, go to [germs.io](https://germs.io/) and look for the **Nch☆** toggle on the left side of the menu to open the in-game panel. You can also click the extension icon in the browser toolbar to see the welcome message.
+Once installed, go to [germs.io](https://germs.io/) and look for the **Nch☆** icon on the left side of the menu to open the panel within the game.
 
 | Control | Function |
 |---|---|
-| **UI / Borders** | Primary color for borders, inputs, and text |
+| **UI / Borders** | Primary color for borders and text |
 | **Background** | Background color for all panels |
 | **Cell background** | Background visible behind your cell |
 | **Menu Size** | Scales the game menu (apply on mouse release) |
@@ -143,11 +143,11 @@ Made by **Nach** for the [Germs.io](https://germs.io/) community.
 
 ## Uso
 
-Una vez instalada, entra a [germs.io](https://germs.io/) y buscá el botón **Nch☆** a la izquierda del menú para abrir el panel en el juego. También podés hacer clic en el ícono de la extensión en la barra del navegador para ver el mensaje de bienvenida.
+Una vez instalada, entra a [germs.io](https://germs.io/) y buscá el icono de **Nch☆** a la izquierda del menú para abrir el panel en el juego. También podés hacer clic en el ícono de la extensión en la barra del navegador para ver el mensaje de bienvenida.
 
 | Control | Función |
 |---|---|
-| **UI / Bordes** | Color principal de bordes, inputs y texto |
+| **UI / Bordes** | Color principal de bordes y texto |
 | **Fondo** | Color de fondo de todos los paneles |
 | **Cell background** | Fondo visible detrás de tu celda |
 | **Menu Size** | Escala el menú del juego (se aplica al soltar el mouse) |
