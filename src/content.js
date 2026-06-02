@@ -316,6 +316,54 @@ div.gm.active { background-color: ' + ui + ' !important; border: 2px solid ' + f
   box-shadow: none !important;\n\
 }\n\
 \n\
+/* LOCKED NAME PANELS */\n\
+#loginCustomLocked, #loginCustomLockedName {\n\
+  background: transparent !important;\n\
+  box-shadow: none !important;\n\
+}\n\
+\n\
+/* REDEEM CODE */\n\
+#loginCustomLocked h5, #loginCustomLockedName h5 {\n\
+  color: ' + ui + ' !important;\n\
+}\n\
+#loginLockedNameRedeem {\n\
+  background: ' + fondo + ' !important;\n\
+  color: ' + ui + ' !important;\n\
+  border-color: ' + ui + ' !important;\n\
+}\n\
+#loginLockedNameRedeem::placeholder { color: ' + ui + '88 !important; }\n\
+.input-group-append .btn.btn-info {\n\
+  background: ' + ui + ' !important;\n\
+  color: ' + fondo + ' !important;\n\
+  border-color: ' + ui + ' !important;\n\
+}\n\
+\n\
+/* BLOCKLIST / MUTE */\n\
+#userMenuPlayerName { color: ' + ui + ' !important; }\n\
+#userMenuBlockText  { color: ' + ui + ' !important; }\n\
+#blocklistList li, #blockerList li { color: ' + ui + ' !important; }\n\
+button.block-button {\n\
+  color: ' + ui + ' !important;\n\
+  background: transparent !important;\n\
+  border-color: ' + ui + ' !important;\n\
+}\n\
+button.block-button i.fas {\n\
+  color: ' + ui + ' !important;\n\
+}\n\
+button.block-button.blocked {\n\
+  color: ' + ui + '88 !important;\n\
+  border-color: ' + ui + '88 !important;\n\
+}\n\
+button.block-button.blocked i.fas {\n\
+  color: ' + ui + '88 !important;\n\
+}\n\
+#germsfox-settings-blocklist {\n\
+  background: transparent !important;\n\
+}\n\
+#germsfox-settings-blocklist .clearfix {\n\
+  background: transparent !important;\n\
+}\n\
+\n\
 i.fa-coins, .fa-coins { color: #ffd700 !important; }\n\
 \n\
 /* PARTY CODE */\n\
