@@ -45,13 +45,12 @@
 
 ## Features
 
-- **Customizable UI color** — borders, inputs, and text
-- **Customizable background** — all panels
-- **Cell background** — choose between Default, Transparent, White, or Black
-- **Menu Size** — scale the game menu (85%–100%) without glitches
-- **Panel sizes S / M / L** — choose how large the in-game panel appears (default: M)
+- **Customizable UI color** 
+- **Customizable background** 
+- **Cell background**
+- **Menu Size**
+- **Panel sizes S / M / L**
 - **Enhanced XP bar**
-- **Real-time color preview** — colors update live as you drag the picker
 - All settings are saved automatically and persist between sessions.
 - Clicking **Restore defaults** resets all values including panel size.
 
@@ -115,13 +114,12 @@ Made by **Nach** for the [Germs.io](https://germs.io/) community.
 
 ## Características
 
-- **Color UI personalizable** — bordes, inputs y texto
-- **Fondo personalizable** — todos los paneles
-- **Cell background** — elegí entre Default, Transparente, Blanco o Negro
-- **Menu Size** — escala el menú del juego (85%–100%) sin glitches
-- **Tamaños de panel S / M / L** — elegí qué tan grande se ve el panel en el juego (por defecto: M)
+- **Color UI personalizable** 
+- **Fondo personalizable**s
+- **Cell background**
+- **Menu Size**
+- **Tamaños de panel S / M / L**
 - **XP bar mejorada**
-- **Vista previa de color en tiempo real** — los colores se actualizan en vivo al mover el picker
 - Todos los ajustes se guardan automáticamente y persisten entre sesiones.
 - Al hacer clic en **Restaurar defaults** se reinician todos los valores incluyendo el tamaño del panel.
 
