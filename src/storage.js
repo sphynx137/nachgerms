@@ -6,7 +6,8 @@ var NACH_DEFAULTS = {
   colorUI:    '#00eeff',
   colorFondo: '#000000',
   cellBg:     'default',
-  menuZoom:   1.0
+  menuZoom:   1.0,
+  panelSize:  'M'
 };
 
 var NachStorage = {
