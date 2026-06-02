@@ -569,7 +569,11 @@ function injectNachPanel() {
   if (resetBtn) {
     resetBtn.addEventListener('mouseenter', function () { resetBtn.style.opacity = '0.7'; });
     resetBtn.addEventListener('mouseleave', function () { resetBtn.style.opacity = '1'; });
-    resetBtn.addEventListener('click', function () { NachStorage.set(NACH_DEFAULTS); syncPanel(); });
+    resetBtn.addEventListener('click', function () {
+      NachStorage.set(NACH_DEFAULTS);
+      applyPanelSize(NACH_DEFAULTS.panelSize);
+      syncPanel();
+    });
   }
 
   // Wire zoom slider
