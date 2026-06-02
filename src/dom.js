@@ -334,8 +334,8 @@ function injectNachPanel() {
 
     // Reset
     '<div class="ge-np-sec">' +
-      '<button id="ge-np-reset" style="width:100%;padding:5px;background:transparent;border:1px solid #333;' +
-        'border-radius:4px;font-size:10px;cursor:pointer;font-family:Arial,sans-serif;transition:opacity .15s">' +
+      '<button id="ge-np-reset" style="width:100%;padding:5px;background:transparent;border:2px solid #333;' +
+        'border-radius:4px;font-size:10px;cursor:pointer;font-family:Arial,sans-serif;transition:all .15s">' +
         'Restore defaults' +
       '</button>' +
     '</div>' +
@@ -347,7 +347,7 @@ function injectNachPanel() {
         '<input type="range" id="ge-np-zoom-slider" min="85" max="100" step="1" value="100"' +
           ' style="flex:1;height:4px;cursor:pointer;accent-color:#00eeff;background:transparent;' +
           '-webkit-appearance:none;appearance:none">' +
-        '<span id="ge-np-zoom-pct" style="font-size:10px;font-family:monospace;min-width:32px;text-align:right">100%</span>' +
+        '<span id="ge-np-zoom-pct" style="font-size:9px;font-family:monospace;min-width:28px;text-align:right;flex-shrink:0">100%</span>' +
       '</div>' +
     '</div>' +
 
@@ -451,7 +451,7 @@ function injectNachPanel() {
       if (els.hexUI)     { els.hexUI.textContent = ui;    els.hexUI.style.color = ui; }
       if (els.hexFondo)  els.hexFondo.textContent = fondo;
       if (els.cellName)  { els.cellName.textContent = CELLBG_LABELS_PANEL[bg] || bg; els.cellName.style.color = ui; }
-      if (els.reset)     { els.reset.style.color = ui; els.reset.style.borderColor = ui + '66'; }
+      if (els.reset)     { els.reset.style.color = fondo; els.reset.style.background = ui; els.reset.style.borderColor = ui; }
       if (els.zSlider) {
         els.zSlider.value = Math.round(zoom * 100);
         els.zSlider.style.accentColor = ui;
@@ -498,19 +498,20 @@ function injectNachPanel() {
       panel.style.background   = fondo;
       _setPanelDynStyle(ui);
       var ids = ['ge-np-title','ge-np-lbl-colores','ge-np-lbl-ui','ge-np-lbl-cellbg',
-                 'ge-np-lbl-zoom','ge-np-hex-ui','ge-np-cellbg-name','ge-np-reset',
+                 'ge-np-lbl-zoom','ge-np-hex-ui','ge-np-cellbg-name',
                  'ge-np-lbl-fondo','ge-np-hex-fondo'];
       ids.forEach(function(id) {
         var el = document.getElementById(id);
         if (!el) return;
-        if (id === 'ge-np-reset') { el.style.color = ui; el.style.borderColor = ui + '66'; }
-        else if (id === 'ge-np-compat') el.style.color = ui + 'aa';
+        if (id === 'ge-np-compat') el.style.color = ui + 'aa';
         else el.style.color = ui;
       });
       var zPct = document.getElementById('ge-np-zoom-pct');
       if (zPct) zPct.style.color = ui;
       var zSlider = document.getElementById('ge-np-zoom-slider');
       if (zSlider) zSlider.style.accentColor = ui;
+      var resetBtn = document.getElementById('ge-np-reset');
+      if (resetBtn) { resetBtn.style.color = colorFondo; resetBtn.style.background = ui; resetBtn.style.borderColor = ui; }
       ['S','M','L'].forEach(function(s) {
         var b = document.getElementById('ge-np-sz-' + s);
         if (b) b.style.color = ui;
