@@ -279,6 +279,14 @@ div.gm.active { background-color: ' + ui + ' !important; border: 2px solid ' + f
 /* SKINS */\n\
 #skinsCard { background-color: ' + fondo + ' !important; }\n\
 #skinContainer { background-color: transparent !important; }\n\
+#loginCustomSkinText, #searchText {\n\
+  color: ' + ui + ' !important;\n\
+  border-color: ' + ui + ' !important;\n\
+  background-color: ' + fondo + ' !important;\n\
+}\n\
+#loginCustomSkinText::placeholder, #searchText::placeholder {\n\
+  color: ' + ui + '88 !important;\n\
+}\n\
 \n\
 /* RANKINGS */\n\
 #rankingsCard { background-color: ' + fondo + ' !important; }\n\
