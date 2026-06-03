@@ -535,6 +535,12 @@ span#ge-gf-label, span#ge-gf-label * {\n\
 #germsfox-settings-theme .col-md-6[style*="text-align: left"] {\n\
   color: ' + ui + ' !important;\n\
 }\n\
+#germsfox-settings-general label.btn,\n\
+#germsfox-settings-controls label.btn {\n\
+  color: #fff !important;\n\
+  border: 2px solid ' + ui + ' !important;\n\
+  border-radius: 6px !important;\n\
+}\n\
 /* SETTINGS GAME TEXT */\n\
 #settings-controls p, #settings-controls label,\n\
 #settings-controls div[style*="font-size"],\n\
