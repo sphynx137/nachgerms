@@ -527,6 +527,7 @@ function injectNachPanel() {
       if (cellTrigger) cellTrigger.style.borderColor = ui;
       var activeOpt = document.querySelector('#ge-cellbg-popup [data-cellval="' + cellBg + '"]');
       if (activeOpt) activeOpt.style.borderColor = ui;
+      if (typeof nachIconsUpdate === 'function') nachIconsUpdate(ui);
     }, 50);
   }
 
