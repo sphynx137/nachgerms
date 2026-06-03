@@ -210,6 +210,9 @@ input[type="checkbox"]:checked + label::before,\n\
   background-color: ' + fondo + ' !important;\n\
   border-color: ' + ui + ' !important;\n\
 }\n\
+span.slider.round {\n\
+  box-shadow: 0 0 0 2px ' + ui + ' !important;\n\
+}\n\
 \n\
 /* TABS */\n\
 #settingsTabs, .nav.nav-pills { flex-wrap: nowrap !important; white-space: nowrap !important; }\n\
