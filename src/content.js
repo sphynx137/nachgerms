@@ -103,6 +103,13 @@ div[class*="btn"]:not(.btn-info), span[class*="btn"]:not(.btn-info) {\n\
   border: 2px solid ' + ui + ' !important;\n\
   outline: none !important;\n\
 }\n\
+#cellButtons button {\n\
+  border: 0px solid transparent !important;\n\
+  outline: none !important;\n\
+}\n\
+#cellButtons button:hover {\n\
+  border: 1px solid rgba(255,255,255,0.7) !important;\n\
+}\n\
 \n\
 /* INPUTS */\n\
 input[type="text"]:not(#chat_input), input[type="search"]:not(#chat_input),\n\
