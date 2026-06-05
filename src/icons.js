@@ -50,25 +50,89 @@ function injectShopIcon(ui) {
 }
 
 // ─── GIFT ICON ───────────────────────────────────────────────────────────────
+//  Caja con tapa rectangular, cinta vertical, y lazo de dos loops redondeados.
+//  Estilo outline (stroke), sin relleno. Coincide con imagen de referencia.
 
-function injectGiftIcon(ui) {
-  var svg = _replaceImg('loginGift', 'gift.png', 'ge-gift-svg', '0 0 24 24',
-    '<path d="M20 6h-2.18c.07-.26.18-.51.18-.8C18 3.88 16.12 2 13.8 2c-1.15 0-2.15.67-2.88' +
-    ' 1.39L10 4.41 9.08 3.4C8.35 2.67 7.35 2 6.2 2 3.88 2 2 3.88 2 6.2c0 .29.11.54.18.8H2' +
-    'C.9 7 0 7.9 0 9v2c0 1.1.9 2 2 2h20c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z"/>' +
-    '<path d="M11 14H2v7c0 .55.45 1 1 1h8v-8z"/>' +
-    '<path d="M13 14v8h8c.55 0 1-.45 1-1v-7h-9z"/>'
+function _giftContent(ui) {
+  var c = ui;
+  return (
+    // Tapa de la caja
+    '<rect x="1.5" y="8" width="21" height="4" rx="1.5"' +
+    ' fill="none" stroke="' + c + '" stroke-width="1.8" stroke-linejoin="round"/>' +
+    // Cuerpo de la caja
+    '<rect x="2.5" y="12" width="19" height="9.5" rx="1.5"' +
+    ' fill="none" stroke="' + c + '" stroke-width="1.8" stroke-linejoin="round"/>' +
+    // Cinta vertical (de arriba de la tapa hasta el fondo del cuerpo)
+    '<line x1="12" y1="8" x2="12" y2="21.5"' +
+    ' stroke="' + c + '" stroke-width="1.8" stroke-linecap="square"/>' +
+    // Loop izquierdo del lazo
+    '<path d="M12 8 C9.5 5.5,5.5 5.5,6.5 8 C7 9.5,10.5 9.5,12 8"' +
+    ' fill="none" stroke="' + c + '" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' +
+    // Loop derecho del lazo (espejo)
+    '<path d="M12 8 C14.5 5.5,18.5 5.5,17.5 8 C17 9.5,13.5 9.5,12 8"' +
+    ' fill="none" stroke="' + c + '" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'
   );
-  if (svg) svg.style.fill = ui;
 }
 
-// ─── LEADERBOARD ICON ────────────────────────────────────────────────────────
+function injectGiftIcon(ui) {
+  var existing = document.getElementById('ge-gift-svg');
+  if (existing) { existing.innerHTML = _giftContent(ui); return existing; }
+
+  var container = document.getElementById('loginGift');
+  if (!container) return null;
+  var img = container.querySelector('img.nodrag');
+  if (!img) return null;
+  var w = img.offsetWidth  || 30;
+  var h = img.offsetHeight || 26;
+  var svg = _makeSvg('ge-gift-svg', '0 0 24 24', w, h, _giftContent(ui));
+  img.parentNode.replaceChild(svg, img);
+  return svg;
+}
+
+// ─── CROWN / LEADERBOARD ICON ────────────────────────────────────────────────
+//  Corona de 3 puntas con bolitas, curvas suaves entre puntas y doble línea
+//  curva en la base. Estilo outline (stroke). Coincide con imagen de referencia.
+
+function _crownContent(ui) {
+  var c = ui;
+  return (
+    // Silueta de la corona: punta izq → valle → punta central → valle → punta der
+    '<path d="M1 17.5' +
+    ' C1.5 14,3 11,4 13' +
+    ' C5.5 16,7 18.5,9.5 18' +
+    ' C10.5 17.5,11 5.5,12 4' +
+    ' C13 5.5,13.5 17.5,14.5 18' +
+    ' C17 18.5,18.5 16,20 13' +
+    ' C21 11,22.5 14,23 17.5"' +
+    ' fill="none" stroke="' + c + '" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' +
+    // Base línea 1
+    '<path d="M1 19 Q12 21 23 19"' +
+    ' fill="none" stroke="' + c + '" stroke-width="1.8" stroke-linecap="round"/>' +
+    // Base línea 2
+    '<path d="M1.5 21.5 Q12 23.5 22.5 21.5"' +
+    ' fill="none" stroke="' + c + '" stroke-width="1.8" stroke-linecap="round"/>' +
+    // Bolita punta izquierda
+    '<circle cx="4"  cy="13" r="1.5" fill="' + c + '"/>' +
+    // Bolita punta central
+    '<circle cx="12" cy="4"  r="1.5" fill="' + c + '"/>' +
+    // Bolita punta derecha
+    '<circle cx="20" cy="13" r="1.5" fill="' + c + '"/>'
+  );
+}
 
 function injectLeaderboardIcon(ui) {
-  var svg = _replaceImg('loginLeaderboard', 'leaderboard.png', 'ge-leaderboard-svg', '0 0 24 24',
-    '<path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>'
-  );
-  if (svg) svg.style.fill = ui;
+  var existing = document.getElementById('ge-leaderboard-svg');
+  if (existing) { existing.innerHTML = _crownContent(ui); return existing; }
+
+  var container = document.getElementById('loginLeaderboard');
+  if (!container) return null;
+  var img = container.querySelector('img.nodrag');
+  if (!img) return null;
+  var w = img.offsetWidth  || 30;
+  var h = img.offsetHeight || 26;
+  var svg = _makeSvg('ge-leaderboard-svg', '0 0 24 24', w, h, _crownContent(ui));
+  img.parentNode.replaceChild(svg, img);
+  return svg;
 }
 
 // ─── SOCIAL ICONS ─────────────────────────────────────────────────────────────
@@ -282,8 +346,8 @@ function injectGbuxIcon(ui) {
 function nachIconsUpdate(ui, bg) {
   var bgColor = bg || (typeof colorFondo !== 'undefined' ? colorFondo : '#111111');
   _updateColor('ge-shop-svg', ui);
-  _updateColor('ge-gift-svg', ui);
-  _updateColor('ge-leaderboard-svg', ui);
+  injectGiftIcon(ui);
+  injectLeaderboardIcon(ui);
   injectSocialIcons(ui, bgColor);
   injectGbuxIcon(ui);
 }
