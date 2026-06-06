@@ -1,6 +1,6 @@
 # NachGerms — UI Panel
 
-![Version](https://img.shields.io/badge/version-1.2.9-blue)
+![Version](https://img.shields.io/badge/version-1.3.0-red)
 ![Germs.io](https://img.shields.io/badge/Germs.io-compatible-cyan)
 ![Germsfox](https://img.shields.io/badge/Germsfox-compatible-purple)
 
