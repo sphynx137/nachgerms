@@ -1,6 +1,4 @@
 // NachGerms — icons.js
-// Reemplaza imágenes del juego con SVGs dinámicos coloreados con colorUI / colorBg.
-// Se carga después de content.js, por lo que colorUI y colorBg ya están definidos.
 
 // ─── HELPERS GENERALES ───────────────────────────────────────────────────────
 
@@ -50,39 +48,18 @@ function injectShopIcon(ui) {
 }
 
 // ─── GIFT ICON ───────────────────────────────────────────────────────────────
-// Caja rellena con huecos reales formando una "T":
-//   - línea horizontal: separa tapa de caja
-//   - línea vertical: solo en la caja, termina al chocar con la horizontal
-// Moño: outline puro, sin relleno.
 
 function _giftContent(ui) {
-  var c  = ui;
-  var g  = 0.65;        // half-gap del ribbon
-  var lx = 12 - g;      // 11.35
-  var rx = 12 + g;      // 12.65
-  var gy1 = 12 - g;     // 11.35 — borde superior del gap horizontal
-  var gy2 = 12 + g;     // 12.65 — borde inferior del gap horizontal
-
-  var f  = ' fill="' + c + '" stroke="none"';
-  var bs = ' stroke="' + c + '" fill="none"' +
-           ' stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"';
-
+  var g  = 0.65;
+  var lx = 12 - g, rx = 12 + g;
+  var gy1 = 12 - g, gy2 = 12 + g;
+  var f  = ' fill="' + ui + '" stroke="none"';
+  var bs = ' stroke="' + ui + '" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"';
   return (
-    // TAPA completa arriba del gap horizontal (sin corte vertical)
-    '<rect' + f + ' x="3" y="9" width="18" height="' + (gy1 - 9) + '" rx="1"/>' +
-
-    // TAPA completa debajo del gap horizontal
-    '<rect' + f + ' x="3" y="' + gy2 + '" width="18" height="' + (12 - gy2) + '"/>' +
-
-    // CAJA izquierda (desde gy2 hasta fondo, cortada en lx)
-    '<path' + f + ' d="M4 ' + gy2 + ' L' + lx + ' ' + gy2 +
-      ' L' + lx + ' 21 L5 21 Q4 21 4 20 Z"/>' +
-
-    // CAJA derecha (espejo exacto)
-    '<path' + f + ' d="M' + rx + ' ' + gy2 + ' L20 ' + gy2 +
-      ' L20 20 Q20 21 19 21 L' + rx + ' 21 Z"/>' +
-
-    // MOÑO — outline puro, igual que "Antes"
+    '<rect' + f + ' x="3" y="9" width="18" height="' + (gy1-9) + '" rx="1"/>' +
+    '<rect' + f + ' x="3" y="' + gy2 + '" width="18" height="' + (12-gy2) + '"/>' +
+    '<path' + f + ' d="M4 ' + gy2 + ' L' + lx + ' ' + gy2 + ' L' + lx + ' 21 L5 21 Q4 21 4 20 Z"/>' +
+    '<path' + f + ' d="M' + rx + ' ' + gy2 + ' L20 ' + gy2 + ' L20 20 Q20 21 19 21 L' + rx + ' 21 Z"/>' +
     '<path' + bs + ' d="M12 9 C12 9 8.5 4 7 5.5 C5.5 7 8.5 9 12 9"/>' +
     '<path' + bs + ' d="M12 9 C12 9 15.5 4 17 5.5 C18.5 7 15.5 9 12 9"/>'
   );
@@ -102,30 +79,96 @@ function injectGiftIcon(ui) {
   return svg;
 }
 
+// ─── PLUS ICON ───────────────────────────────────────────────────────────────
+// Inyecta en TODOS los <i class="fas fa-plus"> que encuentre en la página.
+// Usa el tamaño exacto del <a> padre (20×20px según devtools).
+
+function _plusContent(ui, maskId) {
+  var SX = 3, SY = 3, SW = 18, SH = 18;
+  var CX = 12, CY = 12;
+  var rx = 2.5, ps = 4, g = 1;
+  return (
+    '<defs>' +
+      '<mask id="' + maskId + '">' +
+        '<rect x="0" y="0" width="24" height="24" fill="white"/>' +
+        '<rect x="' + (CX-g) + '" y="' + (CY-ps) + '" width="' + (g*2) + '" height="' + (ps*2) + '" fill="black"/>' +
+        '<rect x="' + (CX-ps) + '" y="' + (CY-g) + '" width="' + (ps*2) + '" height="' + (g*2) + '" fill="black"/>' +
+      '</mask>' +
+    '</defs>' +
+    '<rect fill="' + ui + '" stroke="none"' +
+      ' x="' + SX + '" y="' + SY + '" width="' + SW + '" height="' + SH + '"' +
+      ' rx="' + rx + '" mask="url(#' + maskId + ')"/>'
+  );
+}
+
+function injectPlusIcons(ui) {
+  var idx = 0;
+
+  // 1. Actualizar SVGs ya inyectados
+  var existingSvgs = document.querySelectorAll('svg.ge-plus-svg');
+  for (var e = 0; e < existingSvgs.length; e++) {
+    existingSvgs[e].innerHTML = _plusContent(ui, 'plus-mask-' + e);
+    idx = e + 1;
+  }
+
+  // 2. Procesar <i class="fa-plus"> sin reemplazar — limpiar estilos del <a> padre
+  var targets = document.querySelectorAll('i.fa-plus');
+  for (var i = 0; i < targets.length; i++) {
+    var iEl  = targets[i];
+    var aEl  = iEl.parentNode;   // <a> con el marco del juego
+    if (!aEl) continue;
+
+    var maskId = 'plus-mask-' + (idx++);
+    var sz = 20;
+
+    // Forzar reset de todos los estilos del <a> con !important
+    aEl.setAttribute('style',
+      'display:inline-flex !important;' +
+      'align-items:center !important;' +
+      'justify-content:center !important;' +
+      'background:none !important;' +
+      'border:none !important;' +
+      'border-radius:0 !important;' +
+      'box-shadow:none !important;' +
+      'outline:none !important;' +
+      'padding:0 !important;' +
+      'margin:0 !important;' +
+      'width:20px !important;' +
+      'height:20px !important;' +
+      'min-width:0 !important;' +
+      'min-height:0 !important;' +
+      'vertical-align:middle !important;' +
+      'cursor:pointer !important;' +
+      'line-height:1 !important;' +
+      'margin-top:7px !important;'
+    );
+
+    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'ge-plus-svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('width', sz);
+    svg.setAttribute('height', sz);
+    svg.style.display       = 'inline-block';
+    svg.style.verticalAlign = 'middle';
+    svg.innerHTML = _plusContent(ui, maskId);
+
+    // Reemplazar solo el <i> — el <a> queda como wrapper limpio
+    aEl.replaceChild(svg, iEl);
+  }
+}
+
 // ─── CROWN / LEADERBOARD ICON ────────────────────────────────────────────────
-//  Corona outline: 3 picos puntiagudos con bolitas, valles suaves,
-//  dos arcos de base curvados hacia arriba. Trazado desde imagen de referencia.
 
 function _crownContent(ui) {
-  var c = ui;
   return (
-    '<path d="' +
-    'M1.5 17.5' +
-    ' C1.8 14,3.6 10,3.8 9.5' +
-    ' C4.0 10,5.8 15,8.5 15' +
-    ' C10.5 15,11.8 4.5,12 3.5' +
-    ' C12.2 4.5,13.5 15,15.5 15' +
-    ' C18.2 15,20.0 10,20.2 9.5' +
-    ' C20.4 10,22.2 14,22.5 17.5' +
-    ' L22 19' +
-    ' Q12 17.5 2 19' +
-    ' Z"' +
-    ' fill="' + c + '" stroke="none"/>' +
-    '<path d="M3 21.5 Q12 20 21 21.5"' +
-    ' fill="none" stroke="' + c + '" stroke-width="1.2" stroke-linecap="round"/>' +
-    '<circle cx="3.8"  cy="9.5" r="1.25" fill="' + c + '"/>' +
-    '<circle cx="12"   cy="3.5" r="1.25" fill="' + c + '"/>' +
-    '<circle cx="20.2" cy="9.5" r="1.25" fill="' + c + '"/>'
+    '<path d="M1.5 17.5 C1.8 14,3.6 10,3.8 9.5 C4.0 10,5.8 15,8.5 15' +
+    ' C10.5 15,11.8 4.5,12 3.5 C12.2 4.5,13.5 15,15.5 15' +
+    ' C18.2 15,20.0 10,20.2 9.5 C20.4 10,22.2 14,22.5 17.5' +
+    ' L22 19 Q12 17.5 2 19 Z" fill="' + ui + '" stroke="none"/>' +
+    '<path d="M3 21.5 Q12 20 21 21.5" fill="none" stroke="' + ui + '" stroke-width="1.2" stroke-linecap="round"/>' +
+    '<circle cx="3.8"  cy="9.5" r="1.25" fill="' + ui + '"/>' +
+    '<circle cx="12"   cy="3.5" r="1.25" fill="' + ui + '"/>' +
+    '<circle cx="20.2" cy="9.5" r="1.25" fill="' + ui + '"/>'
   );
 }
 
@@ -162,9 +205,7 @@ var _SI_DISCORD = [
   ' 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z'
 ].join('');
 
-function _discordMarkup(fill, bg) {
-  return '<path fill="' + fill + '" d="' + _SI_DISCORD + '"/>';
-}
+function _discordMarkup(fill, bg) { return '<path fill="' + fill + '" d="' + _SI_DISCORD + '"/>'; }
 
 var _SI_YOUTUBE = [
   'M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507 0',
@@ -176,11 +217,7 @@ var _SI_YOUTUBE = [
 ].join('');
 
 function _youtubeMarkup(fill, bg) {
-  return (
-    '<g transform="translate(12,12) scale(1.4143) translate(-12,-12)">' +
-    '<path fill="' + fill + '" d="' + _SI_YOUTUBE + '"/>' +
-    '</g>'
-  );
+  return '<g transform="translate(12,12) scale(1.4143) translate(-12,-12)"><path fill="' + fill + '" d="' + _SI_YOUTUBE + '"/></g>';
 }
 
 function _redditMarkup(fill, bg) {
@@ -189,20 +226,15 @@ function _redditMarkup(fill, bg) {
     '<circle cx="20.5" cy="12" r="2.8" fill="' + fill + '"/>' +
     '<ellipse cx="12" cy="15" rx="9" ry="8" fill="' + fill + '"/>' +
     '<rect x="11.2" y="4.5" width="1.6" height="3.2" rx="0.8" fill="' + fill + '"/>' +
-    '<circle cx="12" cy="3"  r="2.5"  fill="' + fill + '"/>' +
+    '<circle cx="12" cy="3"  r="2.5" fill="' + fill + '"/>' +
     '<circle cx="9"  cy="14" r="2"   fill="' + bg + '"/>' +
     '<circle cx="15" cy="14" r="2"   fill="' + bg + '"/>' +
-    '<path d="M9 18.5q3 3.5 6 0" stroke="' + bg + '" stroke-width="1.8"' +
-    ' fill="none" stroke-linecap="round"/>'
+    '<path d="M9 18.5q3 3.5 6 0" stroke="' + bg + '" stroke-width="1.8" fill="none" stroke-linecap="round"/>'
   );
 }
 
 function _facebookMarkup(fill, bg) {
-  return (
-    '<path fill="' + fill + '" d="' +
-    'M17 2h-3a5 5 0 0 0-5 5v3H6v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z' +
-    '"/>'
-  );
+  return '<path fill="' + fill + '" d="M17 2h-3a5 5 0 0 0-5 5v3H6v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>';
 }
 
 function _socialContent(svgId, markup, rectFill, symScale) {
@@ -211,9 +243,7 @@ function _socialContent(svgId, markup, rectFill, symScale) {
     ? '<g transform="translate(12,12) scale(' + symScale + ') translate(-12,-12)">' + markup + '</g>'
     : markup;
   return (
-    '<defs><clipPath id="' + clipId + '">' +
-      '<rect width="24" height="24" rx="5.5"/>' +
-    '</clipPath></defs>' +
+    '<defs><clipPath id="' + clipId + '"><rect width="24" height="24" rx="5.5"/></clipPath></defs>' +
     '<rect width="24" height="24" rx="5.5" fill="' + rectFill + '"/>' +
     '<g clip-path="url(#' + clipId + ')">' + inner + '</g>'
   );
@@ -222,34 +252,24 @@ function _socialContent(svgId, markup, rectFill, symScale) {
 function _injectSocialIcon(srcFragment, svgId, markupFn, ui, bg, invert, symScale) {
   var rectFill = invert ? bg : ui;
   var pathFill = invert ? ui : bg;
-  var markup   = markupFn(pathFill, rectFill);
-  var content  = _socialContent(svgId, markup, rectFill, symScale);
-
+  var content  = _socialContent(svgId, markupFn(pathFill, rectFill), rectFill, symScale);
   var existing = document.getElementById(svgId);
-  if (existing) {
-    existing.innerHTML = content;
-    return existing;
-  }
-
+  if (existing) { existing.innerHTML = content; return existing; }
   var container = document.getElementById('socialIcons');
   if (!container) return null;
-
   var imgs = container.querySelectorAll('img.social-icon');
   var img = null;
   for (var i = 0; i < imgs.length; i++) {
     if ((imgs[i].src || '').indexOf(srcFragment) !== -1) { img = imgs[i]; break; }
   }
   if (!img) return null;
-
   var r = img.getBoundingClientRect();
   var w = (r.width  > 0 ? r.width  : img.offsetWidth)  || 32;
   var h = (r.height > 0 ? r.height : img.offsetHeight) || 32;
-
   var svg = _makeSvg(svgId, '0 0 24 24', w, h, content);
   var cls = img.getAttribute('class');
   if (cls) svg.setAttribute('class', cls);
   svg.style.verticalAlign = 'middle';
-
   img.parentNode.replaceChild(svg, img);
   return svg;
 }
@@ -261,13 +281,13 @@ function injectSocialIcons(ui, bg) {
   _injectSocialIcon('facebook', 'ge-facebook-svg', _facebookMarkup, ui, bg, false, 0.75);
 }
 
-
 // ─── UPDATE ALL ──────────────────────────────────────────────────────────────
 
 function nachIconsUpdate(ui, bg) {
   var bgColor = bg || (typeof colorFondo !== 'undefined' ? colorFondo : '#111111');
   _updateColor('ge-shop-svg', ui);
   injectGiftIcon(ui);
+  injectPlusIcons(ui);
   injectLeaderboardIcon(ui);
   injectSocialIcons(ui, bgColor);
 }
@@ -276,6 +296,7 @@ function _injectAll(ui, bg) {
   var bgColor = bg || (typeof colorFondo !== 'undefined' ? colorFondo : '#111111');
   injectShopIcon(ui);
   injectGiftIcon(ui);
+  injectPlusIcons(ui);
   injectLeaderboardIcon(ui);
   injectSocialIcons(ui, bgColor);
 }
@@ -290,58 +311,44 @@ function _initFromStorage() {
   });
 }
 
-// ─── FIX LOGOUT/LOGIN: MutationObserver ──────────────────────────────────────
+// ─── MUTATIONOBSERVER ────────────────────────────────────────────────────────
 
 function _setupReinjectObserver() {
   var _lastFired = 0;
-  var _COOLDOWN  = 800;
-
+  var _COOLDOWN  = 600;
   var observer = new MutationObserver(function() {
     var now = Date.now();
     if (now - _lastFired < _COOLDOWN) return;
-
     var hasContainers =
       document.getElementById('loginGift')        ||
       document.getElementById('loginShop')        ||
       document.getElementById('loginLeaderboard') ||
+      document.getElementById('loginCoins')       ||
       document.getElementById('socialIcons');
-
     var hasSvgs =
       document.getElementById('ge-gift-svg') &&
-      document.getElementById('ge-shop-svg');
-
-    if (hasContainers && !hasSvgs) {
+      document.getElementById('ge-shop-svg') &&
+      document.querySelector('svg.ge-plus-svg');
+    var unreplacedPlus = document.querySelector("i.fa-plus");
+    if (hasContainers && (!hasSvgs || unreplacedPlus)) {
       _lastFired = now;
       _initFromStorage();
       setTimeout(_initFromStorage, 250);
       setTimeout(_initFromStorage, 600);
     }
   });
-
-  function _startObserver() {
-    observer.observe(document.body, { childList: true, subtree: true });
-  }
-
-  if (document.body) {
-    _startObserver();
-  } else {
-    document.addEventListener('DOMContentLoaded', _startObserver);
-  }
+  function _startObserver() { observer.observe(document.body, { childList: true, subtree: true }); }
+  if (document.body) { _startObserver(); } else { document.addEventListener('DOMContentLoaded', _startObserver); }
 }
 
-[300, 800, 1500, 3000].forEach(function(ms) {
-  setTimeout(_initFromStorage, ms);
-});
-
+[300, 600, 1000, 1500, 2500, 4000].forEach(function(ms) { setTimeout(_initFromStorage, ms); });
 _setupReinjectObserver();
 
 chrome.storage.onChanged.addListener(function(changes, area) {
   if (area !== 'local') return;
   if (!changes.colorUI && !changes.colorFondo) return;
-  var ui = changes.colorUI ? changes.colorUI.newValue
-         : (typeof colorUI !== 'undefined' ? colorUI : '#ffffff');
-  var bg = changes.colorFondo ? changes.colorFondo.newValue
-         : (typeof colorFondo !== 'undefined' ? colorFondo : '#111111');
+  var ui = changes.colorUI ? changes.colorUI.newValue : (typeof colorUI !== 'undefined' ? colorUI : '#ffffff');
+  var bg = changes.colorFondo ? changes.colorFondo.newValue : (typeof colorFondo !== 'undefined' ? colorFondo : '#111111');
   nachIconsUpdate(ui, bg);
   _injectAll(ui, bg);
 });
