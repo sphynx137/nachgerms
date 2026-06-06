@@ -52,14 +52,58 @@ function applyZoom(val) {
 }
 
 // ─── DETECCIÓN DE ESTADO ─────────────────────────────────────────────────────
-// Cuando el botón Play no está visible, el jugador está en partida.
-// En ese estado el JS no toca estilos de texto — el CSS se encarga.
 
 function estaEnJuego() {
   var playBtn = document.getElementById('play');
   if (!playBtn) return false;
   var s = window.getComputedStyle(playBtn);
   return s.display === 'none' || s.visibility === 'hidden' || playBtn.offsetParent === null;
+}
+
+// ─── VERSION TOGGLE ──────────────────────────────────────────────────────────
+// Oculta las 2 líneas de texto gris (versión + términos) y las reemplaza
+// por un pequeño botón "more" que las muestra/oculta al hacer click.
+
+function _updateVersionToggleColor(ui) {
+  var btn = document.getElementById('ge-version-toggle');
+  if (btn) btn.style.setProperty('color', ui, 'important');
+}
+
+function injectVersionToggle() {
+  if (document.getElementById('ge-version-toggle')) return;
+
+  var versionEl = document.getElementById('version');
+  var aboutEl   = document.getElementById('about');
+  if (!versionEl) return;
+
+  // Ocultar ambas líneas
+  versionEl.style.setProperty('display', 'none', 'important');
+  if (aboutEl) aboutEl.style.setProperty('display', 'none', 'important');
+
+  // Crear botón "more"
+  var btn = document.createElement('span');
+  btn.id = 'ge-version-toggle';
+  btn.textContent = 'more';
+  // Posicionar en esquina inferior derecha del contenedor padre
+  var cardEl = versionEl.closest('.card') || versionEl.parentNode;
+  if (cardEl && window.getComputedStyle(cardEl).position === 'static') {
+    cardEl.style.position = 'relative';
+  }
+  btn.style.cssText =
+    'position:absolute;bottom:4px;right:6px;' +
+    'cursor:pointer;font-size:12px;opacity:0.7;' +
+    'letter-spacing:1px;user-select:none;line-height:1;font-weight:600;';
+
+  var visible = false;
+  btn.addEventListener('click', function() {
+    visible = !visible;
+    versionEl.style.setProperty('display', visible ? '' : 'none', 'important');
+    if (aboutEl) aboutEl.style.setProperty('display', visible ? '' : 'none', 'important');
+    btn.textContent = visible ? 'less' : 'more';
+  });
+
+  // Insertar justo antes del #version
+  versionEl.parentNode.insertBefore(btn, versionEl);
 }
 
 // ─── CSS INJECTION ───────────────────────────────────────────────────────────
@@ -307,80 +351,34 @@ div.gm.active { background-color: ' + ui + ' !important; border: 2px solid ' + f
 \n\
 /* GERMSFOX PANEL */\n\
 #germsfoxSettingsCard { background-color: ' + fondo + ' !important; }\n\
-\n\
-/* Override germsfox style.css rgba overlay backgrounds (raiz de las cajas grises) */\n\
-#germsfoxSettingsTabsContent {\n\
-  background: transparent !important;\n\
-  background-color: transparent !important;\n\
-}\n\
-#germsfoxSettingsTabs {\n\
-  background: transparent !important;\n\
-  background-color: transparent !important;\n\
-}\n\
-#germsfox-settings-general p,\n\
-#germsfox-settings-theme p {\n\
-  background: transparent !important;\n\
-  background-color: transparent !important;\n\
-}\n\
-\n\
-/* Remove border/shadow applied by nachgerms general rules on Bootstrap layout elements inside the card */\n\
+#germsfoxSettingsTabsContent { background: transparent !important; background-color: transparent !important; }\n\
+#germsfoxSettingsTabs { background: transparent !important; background-color: transparent !important; }\n\
+#germsfox-settings-general p, #germsfox-settings-theme p { background: transparent !important; background-color: transparent !important; }\n\
 #germsfoxSettingsCard .row,\n\
 #germsfoxSettingsCard [class^="col-"],\n\
 #germsfoxSettingsCard [class*=" col-"],\n\
 #germsfoxSettingsCard .clearfix,\n\
 #germsfoxSettingsCard .input-group {\n\
-  background-color: transparent !important;\n\
-  border: none !important;\n\
-  box-shadow: none !important;\n\
+  background-color: transparent !important; border: none !important; box-shadow: none !important;\n\
 }\n\
 \n\
 /* LOCKED NAME PANELS */\n\
-#loginCustomLocked, #loginCustomLockedName {\n\
-  background: transparent !important;\n\
-  box-shadow: none !important;\n\
-}\n\
-\n\
-/* REDEEM CODE */\n\
-#loginCustomLocked h5, #loginCustomLockedName h5 {\n\
-  color: ' + ui + ' !important;\n\
-}\n\
-#loginLockedNameRedeem {\n\
-  background: ' + fondo + ' !important;\n\
-  color: ' + ui + ' !important;\n\
-  border-color: ' + ui + ' !important;\n\
-}\n\
+#loginCustomLocked, #loginCustomLockedName { background: transparent !important; box-shadow: none !important; }\n\
+#loginCustomLocked h5, #loginCustomLockedName h5 { color: ' + ui + ' !important; }\n\
+#loginLockedNameRedeem { background: ' + fondo + ' !important; color: ' + ui + ' !important; border-color: ' + ui + ' !important; }\n\
 #loginLockedNameRedeem::placeholder { color: ' + ui + '88 !important; }\n\
-.input-group-append .btn.btn-info {\n\
-  background: ' + ui + ' !important;\n\
-  color: ' + fondo + ' !important;\n\
-  border-color: ' + ui + ' !important;\n\
-}\n\
+.input-group-append .btn.btn-info { background: ' + ui + ' !important; color: ' + fondo + ' !important; border-color: ' + ui + ' !important; }\n\
 \n\
-/* BLOCKLIST / MUTE */\n\
+/* BLOCKLIST */\n\
 #userMenuPlayerName { color: ' + ui + ' !important; }\n\
 #userMenuBlockText  { color: ' + ui + ' !important; }\n\
 #blocklistList li, #blockerList li { color: ' + ui + ' !important; }\n\
-button.block-button {\n\
-  color: ' + ui + ' !important;\n\
-  background: transparent !important;\n\
-  border-color: ' + ui + ' !important;\n\
-}\n\
-button.block-button i.fas {\n\
-  color: ' + ui + ' !important;\n\
-}\n\
-button.block-button.blocked {\n\
-  color: ' + ui + '88 !important;\n\
-  border-color: ' + ui + '88 !important;\n\
-}\n\
-button.block-button.blocked i.fas {\n\
-  color: ' + ui + '88 !important;\n\
-}\n\
-#germsfox-settings-blocklist {\n\
-  background: transparent !important;\n\
-}\n\
-#germsfox-settings-blocklist .clearfix {\n\
-  background: transparent !important;\n\
-}\n\
+button.block-button { color: ' + ui + ' !important; background: transparent !important; border-color: ' + ui + ' !important; }\n\
+button.block-button i.fas { color: ' + ui + ' !important; }\n\
+button.block-button.blocked { color: ' + ui + '88 !important; border-color: ' + ui + '88 !important; }\n\
+button.block-button.blocked i.fas { color: ' + ui + '88 !important; }\n\
+#germsfox-settings-blocklist { background: transparent !important; }\n\
+#germsfox-settings-blocklist .clearfix { background: transparent !important; }\n\
 \n\
 i.fa-coins, .fa-coins { color: #ffd700 !important; }\n\
 \n\
@@ -388,14 +386,8 @@ i.fa-coins, .fa-coins { color: #ffd700 !important; }\n\
 #partyCopyCode, input.party-token, .form-control[readonly] { background-color: ' + fondo + ' !important; }\n\
 \n\
 /* SETTINGS / SPECTATE BUTTONS */\n\
-button#settingsButton, button#spectate {\n\
-  background-color: ' + fondo + ' !important;\n\
-  border: 2px solid ' + ui + ' !important;\n\
-  color: ' + ui + ' !important;\n\
-}\n\
+button#settingsButton, button#spectate { background-color: ' + fondo + ' !important; border: 2px solid ' + ui + ' !important; color: ' + ui + ' !important; }\n\
 button#settingsButton i, button#spectate i { color: ' + ui + ' !important; }\n\
-\n\
-/* GERMSFOX BTN */\n\
 button#germsfoxButton { background-color: ' + fondo + ' !important; color: ' + ui + ' !important; }\n\
 \n\
 /* BTN CERRAR */\n\
@@ -405,8 +397,7 @@ button#germsfoxButton { background-color: ' + fondo + ' !important; color: ' + u
 \n\
 /* BTN SOCIAL */\n\
 .btn-discord, .btn-google, button.btn-discord, button.btn-google {\n\
-  color: ' + ui + ' !important; border: 2px solid ' + ui + ' !important;\n\
-  background-color: ' + fondo + ' !important;\n\
+  color: ' + ui + ' !important; border: 2px solid ' + ui + ' !important; background-color: ' + fondo + ' !important;\n\
 }\n\
 \n\
 /* LEVEL */\n\
@@ -444,37 +435,19 @@ button#play, #partyMenu button.party-copy, #partyMenu .btn-party, button.party-c
   background-color: ' + ui + ' !important; color: ' + fondo + ' !important; border: 2px solid ' + ui + ' !important;\n\
 }\n\
 button#play i, i.fa-play, button.party-copy i { color: ' + fondo + ' !important; }\n\
-\n\
 h4.partyCreate, h4.partyCreate span { background-color: ' + fondo + ' !important; color: ' + ui + ' !important; }\n\
-\n\
 hr, div[class*="divider"], div[class*="separator"] { border-color: ' + ui + '55 !important; }\n\
-\n\
 #debugText b { color: ' + ui + ' !important; }\n\
-\n\
 #cellButtons { background: transparent !important; border: none !important; box-shadow: none !important; }\n\
-\n\
-img#loginAvatar {\n\
-  border: 2px solid ' + ui + ' !important; border-radius: 6px !important;\n\
-  box-shadow: 0 0 8px ' + ui + '55 !important; outline: none !important;\n\
-}\n\
-\n\
-h4#loginName, #loginName, h5#shopName, #shopName {\n\
-  outline: none !important; border: none !important;\n\
-  box-shadow: none !important; background: transparent !important;\n\
-  text-shadow: none !important; -webkit-text-stroke: 0 !important;\n\
-}\n\
+img#loginAvatar { border: 2px solid ' + ui + ' !important; border-radius: 6px !important; box-shadow: 0 0 8px ' + ui + '55 !important; outline: none !important; }\n\
+h4#loginName, #loginName, h5#shopName, #shopName { outline: none !important; border: none !important; box-shadow: none !important; background: transparent !important; text-shadow: none !important; -webkit-text-stroke: 0 !important; }\n\
 \n\
 /* SHOP TABS */\n\
 #shopTabLocked, #shopTabVeteran, #shopTabPremium, #shopTabCoins, #shopTabBoosts, #shopTabBucks,\n\
 #shopTabLocked > ul, #shopTabVeteran > ul, #shopTabPremium > ul,\n\
-#shopTabCoins > ul, #shopTabBoosts > ul, #shopTabBucks > ul {\n\
-  background-color: transparent !important;\n\
-}\n\
+#shopTabCoins > ul, #shopTabBoosts > ul, #shopTabBucks > ul { background-color: transparent !important; }\n\
 #shopTabLocked li, #shopTabVeteran li, #shopTabPremium li,\n\
-#shopTabCoins li, #shopTabBoosts li, #shopTabBucks li {\n\
-  background-color: transparent !important;\n\
-}\n\
-\n\
+#shopTabCoins li, #shopTabBoosts li, #shopTabBucks li { background-color: transparent !important; }\n\
 span#shopCoins, span#shopBucks { background: transparent !important; }\n\
 span#shopCoins a, span#shopCoins button, span#shopBucks a, span#shopBucks button {\n\
   background: transparent !important; border: 1px solid ' + ui + ' !important; color: ' + ui + ' !important;\n\
@@ -488,17 +461,17 @@ span#shopCoins a, span#shopCoins button, span#shopBucks a, span#shopBucks button
 #settingsTabsContent select option, #germsfoxSettingsCard select option {\n\
   background-color: ' + fondo + ' !important; color: ' + ui + ' !important;\n\
 }\n\
-\n\
 .xSettingsCard span.badge.badge-primary {\n\
   background-color: ' + fondo + ' !important; border: 1px solid ' + ui + ' !important; color: ' + ui + ' !important;\n\
 }\n\
 \n\
-/* VERSION LABELS — nunca coloreados por NachGerms */\n\
+/* VERSION LABELS */\n\
 #ge-nach-label, #ge-nach-label b, #ge-nach-label a,\n\
-span#ge-gf-label, span#ge-gf-label * {\n\
-  color: unset !important;\n\
-}\n\
+span#ge-gf-label, span#ge-gf-label * { color: unset !important; }\n\
 #ge-nach-label a:hover { text-decoration: underline !important; cursor: pointer !important; }\n\
+\n\
+/* VERSION TOGGLE BUTTON */\n\
+#ge-version-toggle { color: ' + ui + ' !important; opacity: 0.7 !important; }\n\
 \n\
 /* SCROLLBAR */\n\
 ::-webkit-scrollbar { width: 5px; }\n\
@@ -523,35 +496,24 @@ span#ge-gf-label, span#ge-gf-label * {\n\
 .ge-cell-opt[data-val="invisible"] { background: repeating-conic-gradient(#666 0% 25%,#333 0% 50%) 0 0/10px 10px; }\n\
 .ge-cell-opt[data-val="white"]     { background: #ffffff; }\n\
 .ge-cell-opt[data-val="black"]     { background: #000000; }\n\
+\n\
 /* GERMSFOX PANEL TEXT */\n\
-#germsfoxSettingsCard p,\n\
-#germsfoxSettingsCard label:not(.btn),\n\
-#germsfoxSettingsCard span:not(.badge),\n\
-#germsfoxSettingsTabsContent p,\n\
-#germsfoxSettingsTabsContent label:not(.btn),\n\
-#germsfox-settings-general p,\n\
-#germsfox-settings-general label:not(.btn),\n\
-#germsfox-settings-controls p,\n\
-#germsfox-settings-controls label:not(.btn),\n\
+#germsfoxSettingsCard p, #germsfoxSettingsCard label:not(.btn), #germsfoxSettingsCard span:not(.badge),\n\
+#germsfoxSettingsTabsContent p, #germsfoxSettingsTabsContent label:not(.btn),\n\
+#germsfox-settings-general p, #germsfox-settings-general label:not(.btn),\n\
+#germsfox-settings-controls p, #germsfox-settings-controls label:not(.btn),\n\
 #germsfox-settings-general .col-md-6[style*="text-align: left"],\n\
 #germsfox-settings-controls .col-md-6[style*="text-align: left"],\n\
-#germsfox-settings-theme .col-md-6[style*="text-align: left"] {\n\
-  color: ' + ui + ' !important;\n\
+#germsfox-settings-theme .col-md-6[style*="text-align: left"] { color: ' + ui + ' !important; }\n\
+#germsfox-settings-general label.btn, #germsfox-settings-controls label.btn {\n\
+  color: #fff !important; border: 2px solid ' + ui + ' !important; border-radius: 6px !important;\n\
 }\n\
-#germsfox-settings-general label.btn,\n\
-#germsfox-settings-controls label.btn {\n\
-  color: #fff !important;\n\
-  border: 2px solid ' + ui + ' !important;\n\
-  border-radius: 6px !important;\n\
-}\n\
+\n\
 /* SETTINGS GAME TEXT */\n\
-#settings-controls p, #settings-controls label,\n\
-#settings-controls div[style*="font-size"],\n\
+#settings-controls p, #settings-controls label, #settings-controls div[style*="font-size"],\n\
 #settings-gameplay p, #settings-gameplay label,\n\
 #settings-general p, #settings-general label,\n\
-#settings-graphics p, #settings-graphics label {\n\
-  color: ' + ui + ' !important;\n\
-}\n\
+#settings-graphics p, #settings-graphics label { color: ' + ui + ' !important; }\n\
 ';
 
   var etiqueta = document.createElement('style');
@@ -560,10 +522,7 @@ span#ge-gf-label, span#ge-gf-label * {\n\
   document.head.appendChild(etiqueta);
 
   var gfBtn = document.getElementById('germsfoxButton');
-  if (gfBtn) {
-    gfBtn.style.setProperty('background-color', fondo, 'important');
-    gfBtn.style.setProperty('color', ui, 'important');
-  }
+  if (gfBtn) { gfBtn.style.setProperty('background-color', fondo, 'important'); gfBtn.style.setProperty('color', ui, 'important'); }
   var shopCard = document.getElementById('shopCard');
   if (shopCard) shopCard.style.setProperty('background-color', fondo, 'important');
   var rankingsCard = document.getElementById('rankingsCard');
@@ -573,7 +532,6 @@ span#ge-gf-label, span#ge-gf-label * {\n\
 }
 
 // ─── TEXT COLOR ───────────────────────────────────────────────────────────────
-// Solo corre cuando el jugador está en el lobby (no en partida).
 
 function aplicarColorTexto(ui) {
   if (estaEnJuego()) return;
@@ -583,20 +541,16 @@ function aplicarColorTexto(ui) {
       for (var z = 0; z < ZONAS_EXCLUIDAS.length; z++) {
         if (el.closest(ZONAS_EXCLUIDAS[z])) return;
       }
+      // No tocar el botón "more/less" del toggle
+      if (el.id === 'ge-version-toggle') return;
       var clase = (el.className && typeof el.className === 'string') ? el.className : '';
       for (var c = 0; c < CLASES_EXCLUIDAS.length; c++) {
         if (clase.includes(CLASES_EXCLUIDAS[c])) return;
       }
       if (el.id === 'cellName') return;
-      if (el.classList && el.classList.contains('fa-play')) {
-        el.style.setProperty('color', colorFondo, 'important'); return;
-      }
-      if ((el.closest('#cellButtons') || el.closest('#lockedButtons')) && el.tagName === 'P') {
-        el.style.setProperty('color', colorFondo, 'important'); return;
-      }
-      if ((el.closest('span#loginCoins') || el.closest('span#loginBucks')) && el.tagName === 'A') {
-        el.style.setProperty('color', colorFondo, 'important'); return;
-      }
+      if (el.classList && el.classList.contains('fa-play')) { el.style.setProperty('color', colorFondo, 'important'); return; }
+      if ((el.closest('#cellButtons') || el.closest('#lockedButtons')) && el.tagName === 'P') { el.style.setProperty('color', colorFondo, 'important'); return; }
+      if ((el.closest('span#loginCoins') || el.closest('span#loginBucks')) && el.tagName === 'A') { el.style.setProperty('color', colorFondo, 'important'); return; }
       if (el.closest('#loginNextLevel') || el.closest('#loginNextSkin')) {
         var parent = el.closest('#loginNextLevel') || el.closest('#loginNextSkin');
         var primerP = parent ? parent.querySelector('p') : null;
@@ -611,22 +565,14 @@ function aplicarColorTexto(ui) {
 
 function protegerColoresGermsfox() {
   if (estaEnJuego()) return;
-
   document.querySelectorAll('[style*="color"]').forEach(function(el) {
     if (el.closest('#partyText')) return;
     if (el.id === 'loginEXP') return;
-    if (el.classList && el.classList.contains('fa-play')) {
-      el.style.setProperty('color', colorFondo, 'important'); return;
-    }
-    if (el.classList && el.classList.contains('fa-cog') && el.closest('button#settingsButton')) {
-      el.style.setProperty('color', colorUI, 'important'); return;
-    }
-    if (el.classList && el.classList.contains('fa-search') && el.closest('button#spectate')) {
-      el.style.setProperty('color', colorUI, 'important'); return;
-    }
-    if (el.classList && (el.classList.contains('fa-cog') || el.classList.contains('fa-search'))) {
-      el.style.setProperty('color', colorFondo, 'important'); return;
-    }
+    if (el.id === 'ge-version-toggle') return;
+    if (el.classList && el.classList.contains('fa-play')) { el.style.setProperty('color', colorFondo, 'important'); return; }
+    if (el.classList && el.classList.contains('fa-cog') && el.closest('button#settingsButton')) { el.style.setProperty('color', colorUI, 'important'); return; }
+    if (el.classList && el.classList.contains('fa-search') && el.closest('button#spectate')) { el.style.setProperty('color', colorUI, 'important'); return; }
+    if (el.classList && (el.classList.contains('fa-cog') || el.classList.contains('fa-search'))) { el.style.setProperty('color', colorFondo, 'important'); return; }
     if (el.closest('div.gm.active')) return;
     if (el.closest('#loginNextLevel') || el.closest('#loginNextSkin')) return;
     if (el.closest('#cellButtons') && el.tagName === 'P') return;
@@ -671,13 +617,14 @@ new MutationObserver(function() {
 
 new MutationObserver(function() {
   aplicarColorModos();
-}).observe(document.body, {
-  childList: true, subtree: true,
-  attributes: true, attributeFilter: ['style', 'class']
-});
+}).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class'] });
 
 new MutationObserver(function() {
   patchVersionTag();
+  // Re-inyectar toggle si desapareció (logout/login)
+  if (document.getElementById('version') && !document.getElementById('ge-version-toggle')) {
+    injectVersionToggle();
+  }
 }).observe(document.body, { childList: true, subtree: true });
 
 // ─── LISTEN FOR POPUP CHANGES ────────────────────────────────────────────────
@@ -690,21 +637,19 @@ chrome.storage.onChanged.addListener(function(changes, area) {
   if (changes.menuZoom) {
     menuZoom = changes.menuZoom.newValue;
     _setZoom();
-    // Re-position the in-page panel after the menu rescales
     var nachWrap = document.getElementById('ge-nach-wrap');
     if (nachWrap && nachWrap._reposition) nachWrap._reposition();
   }
   aplicarEstilos(colorUI, colorFondo);
   aplicarColorTexto(colorUI);
   protegerColoresGermsfox();
-
+  _updateVersionToggleColor(colorUI);
   var trigger = document.getElementById('ge-cellbg-selector');
   if (trigger) trigger.style.borderColor = colorUI;
   var activeOpt = document.querySelector('#ge-cellbg-popup [data-cellval="' + cellBg + '"]');
   if (activeOpt) activeOpt.style.borderColor = colorUI;
 });
 
-// Live color preview from popup (bypasses storage round-trip)
 chrome.runtime.onMessage.addListener(function(msg) {
   if (!msg || msg.type !== 'NACH_LIVE') return;
   if (msg.data.colorUI !== undefined)    colorUI    = msg.data.colorUI;
@@ -712,6 +657,7 @@ chrome.runtime.onMessage.addListener(function(msg) {
   aplicarEstilos(colorUI, colorFondo);
   aplicarColorTexto(colorUI);
   protegerColoresGermsfox();
+  _updateVersionToggleColor(colorUI);
   var trigger = document.getElementById('ge-cellbg-selector');
   if (trigger) trigger.style.borderColor = colorUI;
   var activeOpt = document.querySelector('#ge-cellbg-popup [data-cellval="' + cellBg + '"]');
@@ -723,9 +669,7 @@ chrome.runtime.onMessage.addListener(function(msg) {
 function actualizarVisibilidadPanel() {
   var wrap = document.getElementById('ge-nach-wrap');
   if (!wrap) return;
-  // Hide while in game
   if (estaEnJuego()) { wrap.style.display = 'none'; return; }
-  // Hide while any overlay is open
   var overlays = ['shop', 'settings', 'skins', 'rankings'];
   for (var i = 0; i < overlays.length; i++) {
     var el = document.getElementById(overlays[i]);
@@ -741,30 +685,20 @@ new MutationObserver(actualizarVisibilidadPanel)
   .observe(document.body, { attributes: true, attributeFilter: ['style'], subtree: true });
 
 // ─── FORCE-LOAD SHOP SKIN IMAGES ─────────────────────────────────────────────
-// Germs.io uses lazy loading (data-src) for shop images; NachGerms CSS can
-// prevent the IntersectionObserver from firing, so we copy data-src → src.
 
 function loadShopImages() {
   document.querySelectorAll('#shopContent img[data-src]').forEach(function(img) {
     var lazySrc = img.getAttribute('data-src');
-    if (lazySrc && img.getAttribute('src') !== lazySrc) {
-      img.setAttribute('src', lazySrc);
-    }
+    if (lazySrc && img.getAttribute('src') !== lazySrc) img.setAttribute('src', lazySrc);
   });
 }
 
-// Fire when a shop tab is clicked
 var shopNav = document.getElementById('shopNav');
-if (shopNav) {
-  shopNav.addEventListener('click', function() { setTimeout(loadShopImages, 100); });
-}
+if (shopNav) shopNav.addEventListener('click', function() { setTimeout(loadShopImages, 100); });
 
-// Fire when the shop itself opens (display changes from none → block)
 new MutationObserver(function() {
   var shop = document.getElementById('shop');
-  if (shop && shop.style.display !== 'none' && shop.offsetParent !== null) {
-    loadShopImages();
-  }
+  if (shop && shop.style.display !== 'none' && shop.offsetParent !== null) loadShopImages();
 }).observe(document.body, { attributes: true, attributeFilter: ['style'], subtree: true });
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
@@ -783,6 +717,7 @@ function nachInit(data) {
   injectNachPanel();
   setTimeout(injectCellBgSelector, 500);
   [500, 1000, 2000, 4000, 8000].forEach(function(ms) { setTimeout(patchVersionTag, ms); });
+  [600, 1200, 2500, 4500].forEach(function(ms) { setTimeout(injectVersionToggle, ms); });
 
   if (menuZoom < 1.0) applyZoom(menuZoom);
 
@@ -791,6 +726,7 @@ function nachInit(data) {
     aplicarColorTexto(colorUI);
     protegerColoresGermsfox();
     patchVersionTag();
+    injectVersionToggle();
     injectCellBgSelector();
     loadShopImages();
   }, 2000);
