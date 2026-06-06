@@ -50,25 +50,24 @@ function injectShopIcon(ui) {
 }
 
 // ─── GIFT ICON ───────────────────────────────────────────────────────────────
-//  Caja con tapa rectangular, cinta vertical, y lazo de dos loops redondeados.
-//  Estilo outline (stroke), sin relleno. Coincide con imagen de referencia.
+//  Caja outline con tapa, cinta vertical y lazo de dos loops simétricos.
 
 function _giftContent(ui) {
   var c = ui;
   return (
-    // Tapa de la caja
+    // Tapa
     '<rect x="1.5" y="8" width="21" height="4" rx="1.5"' +
     ' fill="none" stroke="' + c + '" stroke-width="1.8" stroke-linejoin="round"/>' +
-    // Cuerpo de la caja
+    // Cuerpo
     '<rect x="2.5" y="12" width="19" height="9.5" rx="1.5"' +
     ' fill="none" stroke="' + c + '" stroke-width="1.8" stroke-linejoin="round"/>' +
-    // Cinta vertical (de arriba de la tapa hasta el fondo del cuerpo)
+    // Cinta vertical
     '<line x1="12" y1="8" x2="12" y2="21.5"' +
     ' stroke="' + c + '" stroke-width="1.8" stroke-linecap="square"/>' +
     // Loop izquierdo del lazo
     '<path d="M12 8 C9.5 5.5,5.5 5.5,6.5 8 C7 9.5,10.5 9.5,12 8"' +
     ' fill="none" stroke="' + c + '" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' +
-    // Loop derecho del lazo (espejo)
+    // Loop derecho del lazo
     '<path d="M12 8 C14.5 5.5,18.5 5.5,17.5 8 C17 9.5,13.5 9.5,12 8"' +
     ' fill="none" stroke="' + c + '" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'
   );
@@ -77,12 +76,11 @@ function _giftContent(ui) {
 function injectGiftIcon(ui) {
   var existing = document.getElementById('ge-gift-svg');
   if (existing) { existing.innerHTML = _giftContent(ui); return existing; }
-
   var container = document.getElementById('loginGift');
   if (!container) return null;
   var img = container.querySelector('img.nodrag');
   if (!img) return null;
-  var w = img.offsetWidth  || 30;
+  var w = img.offsetWidth  || 26;
   var h = img.offsetHeight || 26;
   var svg = _makeSvg('ge-gift-svg', '0 0 24 24', w, h, _giftContent(ui));
   img.parentNode.replaceChild(svg, img);
@@ -90,45 +88,47 @@ function injectGiftIcon(ui) {
 }
 
 // ─── CROWN / LEADERBOARD ICON ────────────────────────────────────────────────
-//  Corona de 3 puntas con bolitas, curvas suaves entre puntas y doble línea
-//  curva en la base. Estilo outline (stroke). Coincide con imagen de referencia.
+//  Corona outline: 3 picos puntiagudos con bolitas, valles suaves,
+//  dos arcos de base curvados hacia arriba. Trazado desde imagen de referencia.
 
 function _crownContent(ui) {
   var c = ui;
   return (
-    // Silueta de la corona: punta izq → valle → punta central → valle → punta der
-    '<path d="M1 17.5' +
-    ' C1.5 14,3 11,4 13' +
-    ' C5.5 16,7 18.5,9.5 18' +
-    ' C10.5 17.5,11 5.5,12 4' +
-    ' C13 5.5,13.5 17.5,14.5 18' +
-    ' C17 18.5,18.5 16,20 13' +
-    ' C21 11,22.5 14,23 17.5"' +
-    ' fill="none" stroke="' + c + '" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' +
-    // Base línea 1
-    '<path d="M1 19 Q12 21 23 19"' +
-    ' fill="none" stroke="' + c + '" stroke-width="1.8" stroke-linecap="round"/>' +
-    // Base línea 2
-    '<path d="M1.5 21.5 Q12 23.5 22.5 21.5"' +
-    ' fill="none" stroke="' + c + '" stroke-width="1.8" stroke-linecap="round"/>' +
-    // Bolita punta izquierda
-    '<circle cx="4"  cy="13" r="1.5" fill="' + c + '"/>' +
-    // Bolita punta central
-    '<circle cx="12" cy="4"  r="1.5" fill="' + c + '"/>' +
-    // Bolita punta derecha
-    '<circle cx="20" cy="13" r="1.5" fill="' + c + '"/>'
+    // Cuerpo relleno hasta la primera curva base:
+    // sube por los 3 picos puntiagudos, baja al borde (17.5),
+    // avanza al extremo der de la curva-1 (22,19),
+    // recorre la curva-1 al revés (der→izq, arco cóncavo hacia arriba)
+    // y cierra de vuelta al origen.
+    '<path d="' +
+    'M1.5 17.5' +
+    ' C1.8 14,3.6 10,3.8 9.5' +
+    ' C4.0 10,5.8 15,8.5 15' +
+    ' C10.5 15,11.8 4.5,12 3.5' +
+    ' C12.2 4.5,13.5 15,15.5 15' +
+    ' C18.2 15,20.0 10,20.2 9.5' +
+    ' C20.4 10,22.2 14,22.5 17.5' +
+    ' L22 19' +
+    ' Q12 17.5 2 19' +
+    ' Z"' +
+    ' fill="' + c + '" stroke="none"/>' +
+    // Solo la segunda línea curva queda libre
+    '<path d="M3 21.5 Q12 20 21 21.5"' +
+    ' fill="none" stroke="' + c + '" stroke-width="1.2" stroke-linecap="round"/>' +
+    // Bolitas en los picos
+    '<circle cx="3.8"  cy="9.5" r="1.25" fill="' + c + '"/>' +
+    '<circle cx="12"   cy="3.5" r="1.25" fill="' + c + '"/>' +
+    '<circle cx="20.2" cy="9.5" r="1.25" fill="' + c + '"/>'
   );
 }
 
 function injectLeaderboardIcon(ui) {
   var existing = document.getElementById('ge-leaderboard-svg');
   if (existing) { existing.innerHTML = _crownContent(ui); return existing; }
-
   var container = document.getElementById('loginLeaderboard');
   if (!container) return null;
   var img = container.querySelector('img.nodrag');
   if (!img) return null;
-  var w = img.offsetWidth  || 30;
+  var w = img.offsetWidth  || 26;
   var h = img.offsetHeight || 26;
   var svg = _makeSvg('ge-leaderboard-svg', '0 0 24 24', w, h, _crownContent(ui));
   img.parentNode.replaceChild(svg, img);
@@ -136,15 +136,7 @@ function injectLeaderboardIcon(ui) {
 }
 
 // ─── SOCIAL ICONS ─────────────────────────────────────────────────────────────
-//
-//  Cada ícono expone una función markupFn(fill, bg):
-//    fill → color del símbolo   (pathFill)
-//    bg   → color del fondo / huecos (rectFill)
-//
-//  ui  = colorUI → fondo del cuadrado  (rectFill si invert=false)
-//  bg  = colorBg → símbolo interior    (pathFill si invert=false)
 
-// ── Discord — path Simple Icons (Clyde, sin forma exterior) ──────────────────
 var _SI_DISCORD = [
   'M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864',
   '-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079',
@@ -166,9 +158,6 @@ function _discordMarkup(fill, bg) {
   return '<path fill="' + fill + '" d="' + _SI_DISCORD + '"/>';
 }
 
-// ── YouTube — path Simple Icons, escala x√2 integrada en el markup ────────────
-// La escala está dentro del markup (no en symScale) para que el play-button
-// llene el cuadrado completo. El triángulo CCW crea un hueco que muestra bg.
 var _SI_YOUTUBE = [
   'M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507 0',
   '-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247',
@@ -179,8 +168,6 @@ var _SI_YOUTUBE = [
 ].join('');
 
 function _youtubeMarkup(fill, bg) {
-  // Escala x√2 desde el centro → el play-button llena el cuadrado.
-  // bg coincide con rectFill (invert=true), así los huecos top/bottom son invisibles.
   return (
     '<g transform="translate(12,12) scale(1.4143) translate(-12,-12)">' +
     '<path fill="' + fill + '" d="' + _SI_YOUTUBE + '"/>' +
@@ -188,30 +175,20 @@ function _youtubeMarkup(fill, bg) {
   );
 }
 
-// ── Reddit — Snoo dibujado como formas positivas (sin círculo exterior) ───────
-//  Diseñado en viewBox 0 0 24 24 para llenar bien el espacio antes de symScale.
-//  fill = cuerpo del Snoo  |  bg = color de los huecos (ojos, sonrisa)
 function _redditMarkup(fill, bg) {
   return (
-    // Orejas (detrás de la cabeza para que no sobresalgan demasiado)
     '<circle cx="3.5"  cy="12" r="2.8" fill="' + fill + '"/>' +
     '<circle cx="20.5" cy="12" r="2.8" fill="' + fill + '"/>' +
-    // Cabeza (elipse grande)
     '<ellipse cx="12" cy="15" rx="9" ry="8" fill="' + fill + '"/>' +
-    // Antena: bola + tallo
     '<rect x="11.2" y="4.5" width="1.6" height="3.2" rx="0.8" fill="' + fill + '"/>' +
     '<circle cx="12" cy="3"  r="2.5"  fill="' + fill + '"/>' +
-    // Ojos — huecos que muestran bg
     '<circle cx="9"  cy="14" r="2"   fill="' + bg + '"/>' +
     '<circle cx="15" cy="14" r="2"   fill="' + bg + '"/>' +
-    // Sonrisa — hueco con stroke
     '<path d="M9 18.5q3 3.5 6 0" stroke="' + bg + '" stroke-width="1.8"' +
     ' fill="none" stroke-linecap="round"/>'
   );
 }
 
-// ── Facebook — solo la "f" (sin círculo exterior), path Font Awesome ──────────
-//  viewBox 0 0 24 24; fill = color de la "f"
 function _facebookMarkup(fill, bg) {
   return (
     '<path fill="' + fill + '" d="' +
@@ -220,13 +197,6 @@ function _facebookMarkup(fill, bg) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// _socialContent — construye el innerHTML del SVG.
-//
-//  markup   → SVG elements ya coloreados (generados por la markupFn)
-//  rectFill → color del cuadrado de fondo
-//  symScale → escala del dibujo dentro del marco (null = sin escala)
-// ─────────────────────────────────────────────────────────────────────────────
 function _socialContent(svgId, markup, rectFill, symScale) {
   var clipId = 'nc-clip-' + svgId;
   var inner = (symScale && symScale !== 1)
@@ -241,13 +211,6 @@ function _socialContent(svgId, markup, rectFill, symScale) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// _injectSocialIcon — inyecta o actualiza un ícono social en #socialIcons.
-//
-//  markupFn(fill, bg) → genera el SVG interior ya con colores aplicados
-//  invert             → true: rectFill=bg, pathFill=ui
-//  symScale           → escala del dibujo (null = nativo / ya incluida en markup)
-// ─────────────────────────────────────────────────────────────────────────────
 function _injectSocialIcon(srcFragment, svgId, markupFn, ui, bg, invert, symScale) {
   var rectFill = invert ? bg : ui;
   var pathFill = invert ? ui : bg;
@@ -256,7 +219,6 @@ function _injectSocialIcon(srcFragment, svgId, markupFn, ui, bg, invert, symScal
 
   var existing = document.getElementById(svgId);
   if (existing) {
-    // Reconstruir el innerHTML para actualizar todos los colores de una vez
     existing.innerHTML = content;
     return existing;
   }
@@ -285,61 +247,12 @@ function _injectSocialIcon(srcFragment, svgId, markupFn, ui, bg, invert, symScal
 }
 
 function injectSocialIcons(ui, bg) {
-  //                    src         id                  markupFn         ui  bg  invert  symScale
-  _injectSocialIcon('discord',  'ge-discord-svg',  _discordMarkup,  ui, bg, false,  0.72);  // Clyde reducido
-  _injectSocialIcon('youtube',  'ge-youtube-svg',  _youtubeMarkup,  ui, bg, true,   null);  // invertido, escala en markup
-  _injectSocialIcon('reddit',   'ge-reddit-svg',   _redditMarkup,   ui, bg, false,  0.72);  // Snoo positivo, no invertido
-  _injectSocialIcon('facebook', 'ge-facebook-svg', _facebookMarkup, ui, bg, false,  0.75);  // "f" positiva, no invertida
+  _injectSocialIcon('discord',  'ge-discord-svg',  _discordMarkup,  ui, bg, false, 0.72);
+  _injectSocialIcon('youtube',  'ge-youtube-svg',  _youtubeMarkup,  ui, bg, true,  null);
+  _injectSocialIcon('reddit',   'ge-reddit-svg',   _redditMarkup,   ui, bg, false, 0.72);
+  _injectSocialIcon('facebook', 'ge-facebook-svg', _facebookMarkup, ui, bg, false, 0.75);
 }
 
-
-// ─── GBUX COIN (res/gbux.png) ─────────────────────────────────────────────────
-//  Moneda circular con:
-//    • Anillo exterior más oscuro (border)
-//    • Cuerpo principal en colorUI
-//    • Letra "G" en negro semitransparente (adapta a cualquier colorUI)
-//  La imagen original mide 20×20 px renderizados.
-
-function _gbuxContent(ui) {
-  return (
-    // Capa base completa — será el anillo exterior (más oscuro)
-    '<circle cx="12" cy="12" r="12" fill="' + ui + '"/>' +
-    '<circle cx="12" cy="12" r="12" fill="#000" fill-opacity="0.28"/>' +
-    // Cuerpo interior de la moneda — colorUI sin oscurecer
-    '<circle cx="12" cy="12" r="9.8" fill="' + ui + '"/>' +
-    // Brillo sutil en la parte superior (efecto moneda 3-D)
-    '<ellipse cx="10.5" cy="8.5" rx="4.5" ry="2.8" fill="#fff" fill-opacity="0.13"/>' +
-    // Letra "G" centrada — negro semitransparente para que funcione con cualquier color
-    '<text x="12" y="16.8" text-anchor="middle"' +
-    ' font-family="\'Arial Black\',Impact,sans-serif"' +
-    ' font-weight="900" font-size="13.5"' +
-    ' fill="#000" fill-opacity="0.30">G</text>'
-  );
-}
-
-function injectGbuxIcon(ui) {
-  // Actualizar SVGs ya inyectados
-  var existing = document.querySelectorAll('[id^="ge-gbux-svg"]');
-  for (var e = 0; e < existing.length; e++) {
-    existing[e].innerHTML = _gbuxContent(ui);
-  }
-  if (existing.length) return;
-
-  // Reemplazar TODOS los img[src*="gbux"] de la página
-  var imgs = document.querySelectorAll('img[src*="gbux"]');
-  for (var i = 0; i < imgs.length; i++) {
-    var img = imgs[i];
-    var r = img.getBoundingClientRect();
-    var w = (r.width  > 0 ? r.width  : img.offsetWidth)  || 20;
-    var h = (r.height > 0 ? r.height : img.offsetHeight) || 20;
-    var svgId = 'ge-gbux-svg-' + i;
-    var svg = _makeSvg(svgId, '0 0 24 24', w, h, _gbuxContent(ui));
-    var cls = img.getAttribute('class');
-    if (cls) svg.setAttribute('class', cls);
-    svg.style.verticalAlign = 'middle';
-    img.parentNode.replaceChild(svg, img);
-  }
-}
 
 // ─── UPDATE ALL ──────────────────────────────────────────────────────────────
 
@@ -349,7 +262,6 @@ function nachIconsUpdate(ui, bg) {
   injectGiftIcon(ui);
   injectLeaderboardIcon(ui);
   injectSocialIcons(ui, bgColor);
-  injectGbuxIcon(ui);
 }
 
 function _injectAll(ui, bg) {
@@ -358,12 +270,10 @@ function _injectAll(ui, bg) {
   injectGiftIcon(ui);
   injectLeaderboardIcon(ui);
   injectSocialIcons(ui, bgColor);
-  injectGbuxIcon(ui);
 }
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
 
-// Leer ambos colores desde storage para garantizar que colorBg sea correcto
 function _initFromStorage() {
   chrome.storage.local.get(['colorUI', 'colorFondo'], function(stored) {
     var ui = stored.colorUI || (typeof colorUI !== 'undefined' ? colorUI : '#00ccff');
@@ -372,10 +282,62 @@ function _initFromStorage() {
   });
 }
 
+// ─── FIX LOGOUT/LOGIN: MutationObserver ──────────────────────────────────────
+// Dispara inmediatamente (sin debounce) cuando detecta que los contenedores
+// del juego existen pero nuestros SVGs ya no están.
+// Usa cooldown para no ejecutar en ráfaga y lanza reintentos escalonados
+// cortos para íconos que cargan con retraso.
+
+function _setupReinjectObserver() {
+  var _lastFired = 0;
+  var _COOLDOWN  = 800; // ms mínimos entre ejecuciones
+
+  var observer = new MutationObserver(function() {
+    var now = Date.now();
+    if (now - _lastFired < _COOLDOWN) return; // evitar ráfaga
+
+    // ¿El juego ya renderizó al menos un contenedor?
+    var hasContainers =
+      document.getElementById('loginGift')        ||
+      document.getElementById('loginShop')        ||
+      document.getElementById('loginLeaderboard') ||
+      document.getElementById('socialIcons');
+
+    // ¿Nuestros SVGs principales siguen en el DOM?
+    var hasSvgs =
+      document.getElementById('ge-gift-svg') &&
+      document.getElementById('ge-shop-svg');
+
+    if (hasContainers && !hasSvgs) {
+      _lastFired = now;
+      // Disparo inmediato — cubre gift/shop/leaderboard/social
+      _initFromStorage();
+      // Reintentos cortos — cubren íconos de carga tardía
+      setTimeout(_initFromStorage, 250);
+      setTimeout(_initFromStorage, 600);
+    }
+  });
+
+  function _startObserver() {
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+
+  if (document.body) {
+    _startObserver();
+  } else {
+    document.addEventListener('DOMContentLoaded', _startObserver);
+  }
+}
+
+// Inyección inicial con múltiples intentos (DOM puede tardar en renderizar)
 [300, 800, 1500, 3000].forEach(function(ms) {
   setTimeout(_initFromStorage, ms);
 });
 
+// Arrancar el observer para re-inyectar tras logout/login
+_setupReinjectObserver();
+
+// Escuchar cambios de color en tiempo real
 chrome.storage.onChanged.addListener(function(changes, area) {
   if (area !== 'local') return;
   if (!changes.colorUI && !changes.colorFondo) return;
