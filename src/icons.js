@@ -50,26 +50,41 @@ function injectShopIcon(ui) {
 }
 
 // ─── GIFT ICON ───────────────────────────────────────────────────────────────
-//  Caja outline con tapa, cinta vertical y lazo de dos loops simétricos.
+// Caja rellena con huecos reales formando una "T":
+//   - línea horizontal: separa tapa de caja
+//   - línea vertical: solo en la caja, termina al chocar con la horizontal
+// Moño: outline puro, sin relleno.
 
 function _giftContent(ui) {
-  var c = ui;
+  var c  = ui;
+  var g  = 0.65;        // half-gap del ribbon
+  var lx = 12 - g;      // 11.35
+  var rx = 12 + g;      // 12.65
+  var gy1 = 12 - g;     // 11.35 — borde superior del gap horizontal
+  var gy2 = 12 + g;     // 12.65 — borde inferior del gap horizontal
+
+  var f  = ' fill="' + c + '" stroke="none"';
+  var bs = ' stroke="' + c + '" fill="none"' +
+           ' stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"';
+
   return (
-    // Tapa
-    '<rect x="1.5" y="8" width="21" height="4" rx="1.5"' +
-    ' fill="none" stroke="' + c + '" stroke-width="1.8" stroke-linejoin="round"/>' +
-    // Cuerpo
-    '<rect x="2.5" y="12" width="19" height="9.5" rx="1.5"' +
-    ' fill="none" stroke="' + c + '" stroke-width="1.8" stroke-linejoin="round"/>' +
-    // Cinta vertical
-    '<line x1="12" y1="8" x2="12" y2="21.5"' +
-    ' stroke="' + c + '" stroke-width="1.8" stroke-linecap="square"/>' +
-    // Loop izquierdo del lazo
-    '<path d="M12 8 C9.5 5.5,5.5 5.5,6.5 8 C7 9.5,10.5 9.5,12 8"' +
-    ' fill="none" stroke="' + c + '" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' +
-    // Loop derecho del lazo
-    '<path d="M12 8 C14.5 5.5,18.5 5.5,17.5 8 C17 9.5,13.5 9.5,12 8"' +
-    ' fill="none" stroke="' + c + '" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'
+    // TAPA completa arriba del gap horizontal (sin corte vertical)
+    '<rect' + f + ' x="3" y="9" width="18" height="' + (gy1 - 9) + '" rx="1"/>' +
+
+    // TAPA completa debajo del gap horizontal
+    '<rect' + f + ' x="3" y="' + gy2 + '" width="18" height="' + (12 - gy2) + '"/>' +
+
+    // CAJA izquierda (desde gy2 hasta fondo, cortada en lx)
+    '<path' + f + ' d="M4 ' + gy2 + ' L' + lx + ' ' + gy2 +
+      ' L' + lx + ' 21 L5 21 Q4 21 4 20 Z"/>' +
+
+    // CAJA derecha (espejo exacto)
+    '<path' + f + ' d="M' + rx + ' ' + gy2 + ' L20 ' + gy2 +
+      ' L20 20 Q20 21 19 21 L' + rx + ' 21 Z"/>' +
+
+    // MOÑO — outline puro, igual que "Antes"
+    '<path' + bs + ' d="M12 9 C12 9 8.5 4 7 5.5 C5.5 7 8.5 9 12 9"/>' +
+    '<path' + bs + ' d="M12 9 C12 9 15.5 4 17 5.5 C18.5 7 15.5 9 12 9"/>'
   );
 }
 
@@ -94,11 +109,6 @@ function injectGiftIcon(ui) {
 function _crownContent(ui) {
   var c = ui;
   return (
-    // Cuerpo relleno hasta la primera curva base:
-    // sube por los 3 picos puntiagudos, baja al borde (17.5),
-    // avanza al extremo der de la curva-1 (22,19),
-    // recorre la curva-1 al revés (der→izq, arco cóncavo hacia arriba)
-    // y cierra de vuelta al origen.
     '<path d="' +
     'M1.5 17.5' +
     ' C1.8 14,3.6 10,3.8 9.5' +
@@ -111,10 +121,8 @@ function _crownContent(ui) {
     ' Q12 17.5 2 19' +
     ' Z"' +
     ' fill="' + c + '" stroke="none"/>' +
-    // Solo la segunda línea curva queda libre
     '<path d="M3 21.5 Q12 20 21 21.5"' +
     ' fill="none" stroke="' + c + '" stroke-width="1.2" stroke-linecap="round"/>' +
-    // Bolitas en los picos
     '<circle cx="3.8"  cy="9.5" r="1.25" fill="' + c + '"/>' +
     '<circle cx="12"   cy="3.5" r="1.25" fill="' + c + '"/>' +
     '<circle cx="20.2" cy="9.5" r="1.25" fill="' + c + '"/>'
@@ -283,36 +291,28 @@ function _initFromStorage() {
 }
 
 // ─── FIX LOGOUT/LOGIN: MutationObserver ──────────────────────────────────────
-// Dispara inmediatamente (sin debounce) cuando detecta que los contenedores
-// del juego existen pero nuestros SVGs ya no están.
-// Usa cooldown para no ejecutar en ráfaga y lanza reintentos escalonados
-// cortos para íconos que cargan con retraso.
 
 function _setupReinjectObserver() {
   var _lastFired = 0;
-  var _COOLDOWN  = 800; // ms mínimos entre ejecuciones
+  var _COOLDOWN  = 800;
 
   var observer = new MutationObserver(function() {
     var now = Date.now();
-    if (now - _lastFired < _COOLDOWN) return; // evitar ráfaga
+    if (now - _lastFired < _COOLDOWN) return;
 
-    // ¿El juego ya renderizó al menos un contenedor?
     var hasContainers =
       document.getElementById('loginGift')        ||
       document.getElementById('loginShop')        ||
       document.getElementById('loginLeaderboard') ||
       document.getElementById('socialIcons');
 
-    // ¿Nuestros SVGs principales siguen en el DOM?
     var hasSvgs =
       document.getElementById('ge-gift-svg') &&
       document.getElementById('ge-shop-svg');
 
     if (hasContainers && !hasSvgs) {
       _lastFired = now;
-      // Disparo inmediato — cubre gift/shop/leaderboard/social
       _initFromStorage();
-      // Reintentos cortos — cubren íconos de carga tardía
       setTimeout(_initFromStorage, 250);
       setTimeout(_initFromStorage, 600);
     }
@@ -329,15 +329,12 @@ function _setupReinjectObserver() {
   }
 }
 
-// Inyección inicial con múltiples intentos (DOM puede tardar en renderizar)
 [300, 800, 1500, 3000].forEach(function(ms) {
   setTimeout(_initFromStorage, ms);
 });
 
-// Arrancar el observer para re-inyectar tras logout/login
 _setupReinjectObserver();
 
-// Escuchar cambios de color en tiempo real
 chrome.storage.onChanged.addListener(function(changes, area) {
   if (area !== 'local') return;
   if (!changes.colorUI && !changes.colorFondo) return;
