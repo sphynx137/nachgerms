@@ -4,7 +4,7 @@
 // Depends on: storage.js  (NachStorage, NACH_DEFAULTS)
 // Depends on: content.js  (colorUI, colorFondo, cellBg — available at call time)
 
-var SCRIPT_VERSION = '1.2.9'; // keep in sync with manifest.json "version"
+var SCRIPT_VERSION = '1.3.0'; // keep in sync with manifest.json "version"
 
 // ─── XP BAR ──────────────────────────────────────────────────────────────────
 // Moves the EXP label outside the progress bar and cleans its styling.
