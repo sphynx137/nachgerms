@@ -644,6 +644,7 @@ chrome.storage.onChanged.addListener(function(changes, area) {
   aplicarColorTexto(colorUI);
   protegerColoresGermsfox();
   _updateVersionToggleColor(colorUI);
+  updateImgurLabelColor(colorUI); // ← FIX: sincronizar label PHOTO con UI color
   var trigger = document.getElementById('ge-cellbg-selector');
   if (trigger) trigger.style.borderColor = colorUI;
   var activeOpt = document.querySelector('#ge-cellbg-popup [data-cellval="' + cellBg + '"]');
@@ -658,6 +659,7 @@ chrome.runtime.onMessage.addListener(function(msg) {
   aplicarColorTexto(colorUI);
   protegerColoresGermsfox();
   _updateVersionToggleColor(colorUI);
+  updateImgurLabelColor(colorUI); // ← FIX: sincronizar label PHOTO con UI color (preview en tiempo real)
   var trigger = document.getElementById('ge-cellbg-selector');
   if (trigger) trigger.style.borderColor = colorUI;
   var activeOpt = document.querySelector('#ge-cellbg-popup [data-cellval="' + cellBg + '"]');
