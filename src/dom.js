@@ -528,6 +528,7 @@ function injectNachPanel() {
       var activeOpt = document.querySelector('#ge-cellbg-popup [data-cellval="' + cellBg + '"]');
       if (activeOpt) activeOpt.style.borderColor = ui;
       if (typeof nachIconsUpdate === 'function') nachIconsUpdate(ui);
+      if (typeof updateImgurLabelColor === 'function') updateImgurLabelColor(ui); // ← FIX: sincronizar label PHOTO con color en tiempo real
     }, 50);
   }
 
