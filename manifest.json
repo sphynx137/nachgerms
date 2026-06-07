@@ -31,7 +31,8 @@
         "src/storage.js",
         "src/dom.js",
         "src/content.js",
-        "src/icons.js"
+        "src/icons.js",
+        "src/imgur_photos.js"
       ],
       "run_at": "document_end"
     }
