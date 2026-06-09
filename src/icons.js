@@ -49,39 +49,111 @@ function injectShopIcon(ui) {
 
 // ─── GIFT ICON ───────────────────────────────────────────────────────────────
 
-function _giftContent(ui) {
-  var g  = 0.65;
-  var lx = 12 - g, rx = 12 + g;
+// Detecta si el timer está activo (muestra HH:MM:SS en lugar de "Free Gift!")
+function _isGiftTimerActive() {
+  var timerEl = document.getElementById('giftTimer');
+  if (!timerEl) return false;
+  return /\d{1,2}:\d{2}:\d{2}/.test((timerEl.textContent || timerEl.innerText || '').trim());
+}
+
+// ── Estado CERRADO — "Free Gift!" ──────────────────────────────────────────
+function _giftClosedContent(ui) {
+  var g   = 0.65;
+  var lx  = 12 - g, rx = 12 + g;
   var gy1 = 12 - g, gy2 = 12 + g;
-  var f  = ' fill="' + ui + '" stroke="none"';
-  var bs = ' stroke="' + ui + '" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"';
+  var f   = ' fill="' + ui + '" stroke="none"';
+  var bs  = ' stroke="' + ui + '" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"';
   return (
-    '<rect' + f + ' x="3" y="9" width="18" height="' + (gy1-9) + '" rx="1"/>' +
-    '<rect' + f + ' x="3" y="' + gy2 + '" width="18" height="' + (12-gy2) + '"/>' +
-    '<path' + f + ' d="M4 ' + gy2 + ' L' + lx + ' ' + gy2 + ' L' + lx + ' 21 L5 21 Q4 21 4 20 Z"/>' +
-    '<path' + f + ' d="M' + rx + ' ' + gy2 + ' L20 ' + gy2 + ' L20 20 Q20 21 19 21 L' + rx + ' 21 Z"/>' +
-    '<path' + bs + ' d="M12 9 C12 9 8.5 4 7 5.5 C5.5 7 8.5 9 12 9"/>' +
-    '<path' + bs + ' d="M12 9 C12 9 15.5 4 17 5.5 C18.5 7 15.5 9 12 9"/>'
+    '<rect'  + f  + ' x="3" y="9" width="18" height="' + (gy1 - 9) + '" rx="1"/>' +
+    '<rect'  + f  + ' x="3" y="' + gy2 + '" width="18" height="' + (12 - gy2) + '"/>' +
+    '<path'  + f  + ' d="M4 '  + gy2 + ' L' + lx + ' ' + gy2 + ' L' + lx + ' 21 L5 21 Q4 21 4 20 Z"/>' +
+    '<path'  + f  + ' d="M'  + rx + ' ' + gy2 + ' L20 ' + gy2 + ' L20 20 Q20 21 19 21 L' + rx + ' 21 Z"/>' +
+    '<path'  + bs + ' d="M12 9 C12 9 8.5 4 7 5.5 C5.5 7 8.5 9 12 9"/>' +
+    '<path'  + bs + ' d="M12 9 C12 9 15.5 4 17 5.5 C18.5 7 15.5 9 12 9"/>'
   );
 }
 
+// ── Estado ABIERTO — timer/countdown activo ────────────────────────────────
+function _giftOpenContent(ui) {
+  var f  = ' fill="' + ui + '" stroke="none"';
+  var sw = ' stroke="' + ui + '" fill="none" stroke-linecap="round"';
+  return (
+    // tira horizontal (reemplaza la tapa), sobresale 0.8px a cada lado
+    '<rect' + f + ' x="3.2" y="11" width="17.6" height="1.5" rx="0.5"/>' +
+
+    // cuerpo izq
+    '<path' + f + ' d="M4 12.65 L11.35 12.65 L11.35 21 L5 21 Q4 21 4 20 Z"/>' +
+    // cuerpo der
+    '<path' + f + ' d="M12.65 12.65 L20 12.65 L20 20 Q20 21 19 21 L12.65 21 Z"/>' +
+
+    // decorativos — figuras
+    '<path' + f + ' d="M11 7.5 L12 6 L13 7.5 L12 9 Z"/>' +                      // diamante
+    '<circle' + f + ' cx="6"    cy="8"   r="1"/>' +                              // círculo izq grande
+    '<circle' + f + ' cx="17.5" cy="7"   r="0.75"/>' +                           // círculo der mediano
+    '<circle' + f + ' cx="12"   cy="3.5" r="0.6"/>' +                            // círculo centro-arr
+    '<circle' + f + ' cx="8.5"  cy="4"   r="0.5"/>' +                            // círculo izq-arr
+    '<circle' + f + ' cx="15.5" cy="4.5" r="0.4"/>' +                            // punto der-arr
+    '<path'  + f + ' d="M3.5 5.5 L4.5 4.5 L5.5 5.5 L4.5 6.5 Z"/>' +            // cuadrito rotado
+
+    // decorativos — onduladas (distintos tamaños, posiciones y grosores)
+    '<path' + sw + ' stroke-width="0.5"  d="M7 10.5 C5.5 9.5 7.5 8.2 6 7 C4.8 6 6.5 5 6 4"/>' +
+    '<path' + sw + ' stroke-width="0.4"  d="M10.5 5 C11.2 4.3 10.5 3.5 11.5 3"/>' +
+    '<path' + sw + ' stroke-width="0.55" d="M16 10 C18 9 15.5 7.8 17.5 7 C19 6.4 17 5.5 18 4.5"/>'
+  );
+}
+
+// Inyecta o actualiza el SVG del regalo según el estado actual del timer
 function injectGiftIcon(ui) {
+  var content = _isGiftTimerActive() ? _giftOpenContent(ui) : _giftClosedContent(ui);
   var existing = document.getElementById('ge-gift-svg');
-  if (existing) { existing.innerHTML = _giftContent(ui); return existing; }
+  if (existing) { existing.innerHTML = content; return existing; }
   var container = document.getElementById('loginGift');
   if (!container) return null;
   var img = container.querySelector('img.nodrag');
   if (!img) return null;
   var w = img.offsetWidth  || 26;
   var h = img.offsetHeight || 26;
-  var svg = _makeSvg('ge-gift-svg', '0 0 24 24', w, h, _giftContent(ui));
+  var svg = _makeSvg('ge-gift-svg', '0 0 24 24', w, h, content);
   img.parentNode.replaceChild(svg, img);
   return svg;
 }
 
+// Observer: detecta cuando #giftTimer cambia entre "Free Gift!" y HH:MM:SS
+function _setupGiftTimerObserver() {
+  var _lastActive = null;
+
+  function _checkState() {
+    var active = _isGiftTimerActive();
+    if (active === _lastActive) return;
+    _lastActive = active;
+    var ui = typeof colorUI !== 'undefined' ? colorUI : '#00eeff';
+    injectGiftIcon(ui);
+  }
+
+  function _attachObserver() {
+    var timerEl = document.getElementById('giftTimer');
+    if (!timerEl) return false;
+    new MutationObserver(_checkState)
+      .observe(timerEl, { childList: true, characterData: true, subtree: true });
+    _checkState();
+    return true;
+  }
+
+  if (!_attachObserver()) {
+    var waitObs = new MutationObserver(function () {
+      if (_attachObserver()) waitObs.disconnect();
+    });
+    if (document.body) {
+      waitObs.observe(document.body, { childList: true, subtree: true });
+    } else {
+      document.addEventListener('DOMContentLoaded', function () {
+        waitObs.observe(document.body, { childList: true, subtree: true });
+      });
+    }
+  }
+}
+
 // ─── PLUS ICON ───────────────────────────────────────────────────────────────
-// Inyecta en TODOS los <i class="fas fa-plus"> que encuentre en la página.
-// Usa el tamaño exacto del <a> padre (20×20px según devtools).
 
 function _plusContent(ui, maskId) {
   var SX = 3, SY = 3, SW = 18, SH = 18;
@@ -104,43 +176,27 @@ function _plusContent(ui, maskId) {
 function injectPlusIcons(ui) {
   var idx = 0;
 
-  // 1. Actualizar SVGs ya inyectados
   var existingSvgs = document.querySelectorAll('svg.ge-plus-svg');
   for (var e = 0; e < existingSvgs.length; e++) {
     existingSvgs[e].innerHTML = _plusContent(ui, 'plus-mask-' + e);
     idx = e + 1;
   }
 
-  // 2. Procesar <i class="fa-plus"> sin reemplazar — limpiar estilos del <a> padre
   var targets = document.querySelectorAll('i.fa-plus');
   for (var i = 0; i < targets.length; i++) {
-    var iEl  = targets[i];
-    var aEl  = iEl.parentNode;   // <a> con el marco del juego
+    var iEl = targets[i];
+    var aEl = iEl.parentNode;
     if (!aEl) continue;
 
     var maskId = 'plus-mask-' + (idx++);
     var sz = 20;
 
-    // Forzar reset de todos los estilos del <a> con !important
     aEl.setAttribute('style',
-      'display:inline-flex !important;' +
-      'align-items:center !important;' +
-      'justify-content:center !important;' +
-      'background:none !important;' +
-      'border:none !important;' +
-      'border-radius:0 !important;' +
-      'box-shadow:none !important;' +
-      'outline:none !important;' +
-      'padding:0 !important;' +
-      'margin:0 !important;' +
-      'width:20px !important;' +
-      'height:20px !important;' +
-      'min-width:0 !important;' +
-      'min-height:0 !important;' +
-      'vertical-align:middle !important;' +
-      'cursor:pointer !important;' +
-      'line-height:1 !important;' +
-      'margin-top:7px !important;'
+      'display:inline-flex !important;align-items:center !important;justify-content:center !important;' +
+      'background:none !important;border:none !important;border-radius:0 !important;' +
+      'box-shadow:none !important;outline:none !important;padding:0 !important;margin:0 !important;' +
+      'width:20px !important;height:20px !important;min-width:0 !important;min-height:0 !important;' +
+      'vertical-align:middle !important;cursor:pointer !important;line-height:1 !important;margin-top:7px !important;'
     );
 
     var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -151,8 +207,6 @@ function injectPlusIcons(ui) {
     svg.style.display       = 'inline-block';
     svg.style.verticalAlign = 'middle';
     svg.innerHTML = _plusContent(ui, maskId);
-
-    // Reemplazar solo el <i> — el <a> queda como wrapper limpio
     aEl.replaceChild(svg, iEl);
   }
 }
@@ -239,7 +293,7 @@ function _facebookMarkup(fill, bg) {
 
 function _socialContent(svgId, markup, rectFill, symScale) {
   var clipId = 'nc-clip-' + svgId;
-  var inner = (symScale && symScale !== 1)
+  var inner  = (symScale && symScale !== 1)
     ? '<g transform="translate(12,12) scale(' + symScale + ') translate(-12,-12)">' + markup + '</g>'
     : markup;
   return (
@@ -258,7 +312,7 @@ function _injectSocialIcon(srcFragment, svgId, markupFn, ui, bg, invert, symScal
   var container = document.getElementById('socialIcons');
   if (!container) return null;
   var imgs = container.querySelectorAll('img.social-icon');
-  var img = null;
+  var img  = null;
   for (var i = 0; i < imgs.length; i++) {
     if ((imgs[i].src || '').indexOf(srcFragment) !== -1) { img = imgs[i]; break; }
   }
@@ -305,18 +359,18 @@ function _injectAll(ui, bg) {
 
 function _initFromStorage() {
   chrome.storage.local.get(['colorUI', 'colorFondo'], function(stored) {
-    var ui = stored.colorUI || (typeof colorUI !== 'undefined' ? colorUI : '#00ccff');
+    var ui = stored.colorUI    || (typeof colorUI    !== 'undefined' ? colorUI    : '#00ccff');
     var bg = stored.colorFondo || (typeof colorFondo !== 'undefined' ? colorFondo : '#111111');
     _injectAll(ui, bg);
   });
 }
 
-// ─── MUTATIONOBSERVER ────────────────────────────────────────────────────────
+// ─── MUTATION OBSERVER ───────────────────────────────────────────────────────
 
 function _setupReinjectObserver() {
   var _lastFired = 0;
   var _COOLDOWN  = 600;
-  var observer = new MutationObserver(function() {
+  var observer   = new MutationObserver(function() {
     var now = Date.now();
     if (now - _lastFired < _COOLDOWN) return;
     var hasContainers =
@@ -329,7 +383,7 @@ function _setupReinjectObserver() {
       document.getElementById('ge-gift-svg') &&
       document.getElementById('ge-shop-svg') &&
       document.querySelector('svg.ge-plus-svg');
-    var unreplacedPlus = document.querySelector("i.fa-plus");
+    var unreplacedPlus = document.querySelector('i.fa-plus');
     if (hasContainers && (!hasSvgs || unreplacedPlus)) {
       _lastFired = now;
       _initFromStorage();
@@ -338,16 +392,18 @@ function _setupReinjectObserver() {
     }
   });
   function _startObserver() { observer.observe(document.body, { childList: true, subtree: true }); }
-  if (document.body) { _startObserver(); } else { document.addEventListener('DOMContentLoaded', _startObserver); }
+  if (document.body) { _startObserver(); }
+  else { document.addEventListener('DOMContentLoaded', _startObserver); }
 }
 
 [300, 600, 1000, 1500, 2500, 4000].forEach(function(ms) { setTimeout(_initFromStorage, ms); });
 _setupReinjectObserver();
+_setupGiftTimerObserver();
 
 chrome.storage.onChanged.addListener(function(changes, area) {
   if (area !== 'local') return;
   if (!changes.colorUI && !changes.colorFondo) return;
-  var ui = changes.colorUI ? changes.colorUI.newValue : (typeof colorUI !== 'undefined' ? colorUI : '#ffffff');
+  var ui = changes.colorUI    ? changes.colorUI.newValue    : (typeof colorUI    !== 'undefined' ? colorUI    : '#ffffff');
   var bg = changes.colorFondo ? changes.colorFondo.newValue : (typeof colorFondo !== 'undefined' ? colorFondo : '#111111');
   nachIconsUpdate(ui, bg);
   _injectAll(ui, bg);
@@ -355,7 +411,7 @@ chrome.storage.onChanged.addListener(function(changes, area) {
 
 chrome.runtime.onMessage.addListener(function(msg) {
   if (!msg || msg.type !== 'NACH_LIVE') return;
-  var ui = msg.data.colorUI || (typeof colorUI !== 'undefined' ? colorUI : '#ffffff');
+  var ui = msg.data.colorUI    || (typeof colorUI    !== 'undefined' ? colorUI    : '#ffffff');
   var bg = msg.data.colorFondo || (typeof colorFondo !== 'undefined' ? colorFondo : '#111111');
   nachIconsUpdate(ui, bg);
 });
